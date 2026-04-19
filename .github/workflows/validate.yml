@@ -1,0 +1,64 @@
+# .github/workflows/validate.yml
+#
+# Lints YAML schemas + checks markdown links on every PR that touches docs,
+# schemas, or workflows. Catches the load-bearing failures cheaply:
+#   - YAML syntax errors in /schemas/
+#   - broken internal links across onboarding/forwardables/repos
+#
+# Local repro:
+#   yamllint schemas/ .github/
+#   lychee --offline --no-progress --include-fragments '**/*.md'
+
+name: validate
+
+on:
+  pull_request:
+    paths:
+      - "schemas/**"
+      - "onboarding/**"
+      - "repos/**/README.md"
+      - "profile/**"
+      - "*.md"
+      - ".github/workflows/**"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  yaml:
+    name: YAML schemas
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install yamllint
+        run: pip install --quiet yamllint==1.35.1
+
+      - name: Lint schemas
+        run: |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" schemas/
+
+      - name: Lint workflows + Issue templates
+        run: |
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" .github/
+
+  links:
+    name: Markdown links
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check links (offline + relative paths)
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --offline
+            --no-progress
+            --include-fragments
+            --exclude-mail
+            --exclude '^https?://'
+            './**/*.md'
+          fail: true

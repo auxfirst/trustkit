@@ -1,0 +1,38 @@
+Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 auxfirst
+
+This work — including the AUX framework, the 10 AUX Heuristics, the Trust
+Architecture, the Trust Gap Taxonomy, the schemas in /schemas/, and all
+written content in /onboarding/, /repos/*/README.md, /profile/, /visuals/,
+and /one-pager/ — is licensed under the Creative Commons Attribution 4.0
+International License (CC BY 4.0).
+
+You are free to:
+  - Share — copy and redistribute the material in any medium or format.
+  - Adapt — remix, transform, and build upon the material for any purpose,
+    even commercially.
+
+Under the following terms:
+  - Attribution — You must give appropriate credit to auxfirst, provide a
+    link to https://github.com/auxfirst, and indicate if changes were made.
+    You may do so in any reasonable manner, but not in any way that suggests
+    auxfirst endorses you or your use.
+
+No additional restrictions — You may not apply legal terms or technological
+measures that legally restrict others from doing anything the license permits.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+
+---
+
+Per-repo license variation (when these are split into individual repos):
+
+  - Definition repos (aux-frameworks, trust-gap-classifier, agent-ux-teardowns
+    metadata): CC BY 4.0 — this license.
+  - Executable repos (aux-audit, agent-memory-policy CLI, future tooling): MIT.
+  - Teardown content (agent-ux-teardowns/teardowns/*): CC BY-NC 4.0
+    (attribution, non-commercial).
+
+Each promoted repo will carry its own LICENSE file declaring its specific
+license. This root LICENSE governs the staging hub.

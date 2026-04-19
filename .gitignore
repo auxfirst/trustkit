@@ -1,0 +1,18 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*~
+
+# Founder-only — never push to public
+internal/
+
+# Build / scratch
+node_modules/
+.cache/
+*.log

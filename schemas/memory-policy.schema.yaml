@@ -1,0 +1,68 @@
+# Memory Policy Schema — input for `agent-memory-policy`
+# Version: 0.1.0
+# License: MIT
+
+version: "0.1.0"
+
+$schema:
+  product: { type: string, required: true }
+
+  memory:
+    required: true
+    fields:
+
+      scopes:
+        type: list
+        required: true
+        item:
+          fields:
+            name: { type: string, required: true }
+            retention:
+              type: ISO-8601-duration
+              required: true
+              examples: [P30D, P90D, P365D]
+            purpose: { type: string, required: true }
+            user_visible: { type: boolean, required: true }
+            user_editable: { type: boolean, required: true }
+            lawful_basis:
+              type: enum
+              values: [consent, contract, legitimate_interest, legal_obligation]
+              required: false
+
+      deletion:
+        fields:
+          on_user_request:
+            type: enum
+            values: [immediate, P7D, P30D]
+            required: true
+          on_account_close:
+            type: ISO-8601-duration
+            required: true
+
+      disclosure:
+        fields:
+          surface: { type: string, required: true, description: "where user sees/edits memory" }
+          surface_first_run: { type: boolean, required: true, description: "disclosed on first use" }
+
+example: |
+  product: "Support Copilot v2"
+  memory:
+    scopes:
+      - name: preferences
+        retention: P90D
+        purpose: "personalise tone and language"
+        user_visible: true
+        user_editable: true
+        lawful_basis: consent
+      - name: conversation_history
+        retention: P30D
+        purpose: "resume sessions"
+        user_visible: true
+        user_editable: true
+        lawful_basis: contract
+    deletion:
+      on_user_request: immediate
+      on_account_close: P7D
+    disclosure:
+      surface: "settings > memory"
+      surface_first_run: true

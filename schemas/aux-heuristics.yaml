@@ -1,0 +1,77 @@
+# AUX Heuristics — canonical definition
+# Version: 0.1.0
+# License: CC BY 4.0
+# Referenced by: aux-audit, trust-gap-classifier, agent-ux-teardowns
+
+version: "0.1.0"
+name: "10 AUX Heuristics"
+source: "auxfirst"
+
+heuristics:
+  - id: aux.H01
+    name: "Visibility of Agent Intent & Action"
+    question: "Is the agent's intent legible before or during action?"
+    failure_mode: "silent or opaque execution — user sees effects, not intent"
+    fix_pattern: "intent-handshake"
+
+  - id: aux.H02
+    name: "Progressive Transparency"
+    question: "Can the user zoom in on reasoning, tool calls, and evidence?"
+    failure_mode: "either a black box or a firehose"
+    fix_pattern: "progressive-disclosure"
+
+  - id: aux.H03
+    name: "User Control Through Steering"
+    question: "Can the user correct, redirect, or undo mid-flight?"
+    failure_mode: "commit-only execution with no graceful intervention"
+    fix_pattern: "steering-affordance"
+
+  - id: aux.H04
+    name: "Trust Is Dynamic"
+    question: "Does granted autonomy change with tenure, stakes, and outcomes?"
+    failure_mode: "new-user and expert-user flows are identical"
+    fix_pattern: "trust-ladder-gating"
+
+  - id: aux.H05
+    name: "Clear Boundaries of Autonomy"
+    question: "Is it obvious what the agent will and will not do without asking?"
+    failure_mode: "user cannot predict when confirmation is required"
+    fix_pattern: "autonomy-boundary-label"
+
+  - id: aux.H06
+    name: "Graceful Uncertainty"
+    question: "Does the agent communicate confidence honestly?"
+    failure_mode: "uniform confidence regardless of actual certainty"
+    fix_pattern: "confidence-cues"
+
+  - id: aux.H07
+    name: "Appropriate Agent Assertiveness"
+    question: "Does the agent push back, escalate, or stay quiet when it should?"
+    failure_mode: "constant deference, or constant overreach"
+    fix_pattern: "calibrated-assertiveness"
+
+  - id: aux.H08
+    name: "Context Efficiency"
+    question: "Does the agent use prior context instead of re-asking?"
+    failure_mode: "amnesia within a session or across sessions"
+    fix_pattern: "memory-in-motion"
+
+  - id: aux.H09
+    name: "Multi-Agent Clarity"
+    question: "When multiple agents are present, is responsibility obvious?"
+    failure_mode: "users cannot tell which agent did what"
+    fix_pattern: "agent-attribution"
+
+  - id: aux.H10
+    name: "Consistency of Behavior"
+    question: "Does the agent behave the same way for the same input, over time?"
+    failure_mode: "silent drift between sessions or model versions"
+    fix_pattern: "behavioral-contract"
+
+scoring:
+  scale: [0, 1, 2, 3]
+  labels:
+    0: "absent — not even acknowledged"
+    1: "attempted — surface signal, no real mechanism"
+    2: "present — works in happy path, breaks under load"
+    3: "robust — works under novel, adversarial, or edge cases"

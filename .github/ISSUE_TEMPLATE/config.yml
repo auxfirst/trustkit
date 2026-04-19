@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Read CONTRIBUTING first
+    url: https://github.com/auxfirst/auxfirst/blob/main/CONTRIBUTING.md
+    about: The bar is high. Please read before opening an Issue.
+  - name: Vocabulary check
+    url: https://github.com/auxfirst/auxfirst/blob/main/onboarding/appendix-a-vocabulary.md
+    about: AUX uses precise terminology — confirm you mean what you think you mean.

@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>auxfirst · Overview</title>
+<style>
+  :root {
+    --ink: #0f1214;
+    --paper: #fafaf7;
+    --line: #1a1d20;
+    --muted: #6b7280;
+    --accent: #ff5a1f;
+    --accent-soft: #ffe9df;
+    --ok: #0f7b5a;
+    --warn: #b45309;
+    --crit: #b42318;
+    --trust-1: #fef3c7;
+    --trust-2: #e0e7ff;
+    --trust-3: #dcfce7;
+    --trust-4: #fce7f3;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap {
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 56px 40px 120px;
+  }
+  header.top { border-bottom: 1px solid var(--line); padding-bottom: 24px; margin-bottom: 48px; }
+  .eyebrow { font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  h1 { font-size: 44px; line-height: 1.1; margin: 0 0 12px; letter-spacing: -0.02em; }
+  h1 .accent { color: var(--accent); }
+  .lede { font-size: 18px; color: #374151; max-width: 720px; margin: 0; }
+  section { margin-top: 72px; }
+  h2 { font-size: 26px; letter-spacing: -0.01em; margin: 0 0 6px; }
+  h2 .num { color: var(--accent); font-variant-numeric: tabular-nums; margin-right: 10px; font-weight: 600; }
+  h2 + .sub { color: var(--muted); margin: 0 0 28px; font-size: 15px; }
+
+  /* Architecture diagram ----------------------------------------------- */
+  .arch {
+    display: grid;
+    grid-template-columns: 1fr 56px 1fr;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow: hidden;
+    background: white;
+  }
+  .arch .col { padding: 24px; }
+  .arch .col h3 {
+    font-size: 13px; letter-spacing: 0.08em; text-transform: uppercase;
+    margin: 0 0 4px; color: var(--muted);
+  }
+  .arch .col h4 { font-size: 18px; margin: 0 0 16px; font-weight: 600; }
+  .arch .col ul { list-style: none; padding: 0; margin: 0; }
+  .arch .col li {
+    padding: 10px 12px;
+    background: #f3f4f6;
+    border-radius: 6px;
+    font-size: 14px;
+    margin-bottom: 6px;
+    font-family: ui-monospace, "SF Mono", "Menlo", monospace;
+  }
+  .arch .col.private li { background: #eef2ff; }
+  .arch .col.public li { background: var(--accent-soft); }
+  .arch .bridge {
+    background: var(--ink);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  /* Workflow pipeline -------------------------------------------------- */
+  .pipeline {
+    display: grid;
+    grid-template-columns: 1fr 40px 1fr 40px 1fr;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 12px;
+  }
+  .node {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+  }
+  .node .tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 6px; }
+  .node h4 { margin: 0 0 8px; font-size: 16px; }
+  .node .body { font-size: 13px; color: #374151; }
+  .node.input { background: #fefce8; border-color: #ca8a04; }
+  .node.process { background: var(--ink); color: white; border-color: var(--ink); }
+  .node.process h4, .node.process .tag, .node.process .body { color: white; }
+  .node.output { background: var(--accent-soft); border-color: var(--accent); }
+  .arrow {
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; color: var(--accent); font-weight: 600;
+  }
+  pre.snip {
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 12px;
+    background: #0f1214;
+    color: #e5e7eb;
+    padding: 14px;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin: 10px 0 0;
+  }
+  pre.snip .k { color: #93c5fd; }
+  pre.snip .s { color: #fca5a5; }
+  pre.snip .n { color: #fcd34d; }
+
+  /* Trust ladder ------------------------------------------------------- */
+  .ladder { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 12px; }
+  .rung {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px;
+    min-height: 200px;
+    display: flex; flex-direction: column;
+  }
+  .rung .id { font-family: ui-monospace, Menlo, monospace; font-size: 11px; color: var(--muted); }
+  .rung h4 { margin: 4px 0 6px; font-size: 16px; }
+  .rung .q { font-size: 13px; color: #374151; font-style: italic; margin-bottom: 10px; }
+  .rung .fail { font-size: 12px; color: var(--crit); margin-top: auto; }
+  .rung.t1 { background: var(--trust-1); }
+  .rung.t2 { background: var(--trust-2); }
+  .rung.t3 { background: var(--trust-3); }
+  .rung.t4 { background: var(--trust-4); }
+
+  /* Repo grid ---------------------------------------------------------- */
+  .repo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .repo {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 20px;
+    background: white;
+  }
+  .repo .slug {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .repo .kind {
+    display: inline-block; font-size: 10px; letter-spacing: 0.12em;
+    text-transform: uppercase; padding: 2px 8px; border-radius: 4px;
+    margin-left: 8px;
+  }
+  .kind.def { background: #eef2ff; color: #3730a3; }
+  .kind.exec { background: var(--accent-soft); color: #9a3412; }
+  .kind.ref { background: #ecfdf5; color: #065f46; }
+  .repo h4 { margin: 10px 0 6px; font-size: 16px; }
+  .repo p { margin: 0; font-size: 13px; color: #374151; }
+  .repo .output { margin-top: 10px; font-size: 12px; color: var(--muted); font-family: ui-monospace, Menlo, monospace; }
+
+  /* Legend ------------------------------------------------------------- */
+  .legend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; font-size: 12px; color: var(--muted); }
+
+  /* Router role cards -------------------------------------------------- */
+  .roles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 12px; }
+  .role {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 16px 14px;
+    background: white;
+    display: flex; flex-direction: column;
+    min-height: 200px;
+  }
+  .role .rid {
+    font-family: ui-monospace, Menlo, monospace;
+    font-size: 11px; color: var(--accent); font-weight: 600;
+    letter-spacing: 0.1em;
+  }
+  .role h4 { margin: 6px 0 4px; font-size: 14px; line-height: 1.3; }
+  .role .fear { font-size: 12px; color: var(--muted); font-style: italic; margin-bottom: 10px; }
+  .role .take {
+    margin-top: auto;
+    font-size: 12px;
+    color: var(--ink);
+    border-top: 1px dashed #d1d5db;
+    padding-top: 8px;
+  }
+  .role .take strong { color: var(--accent); }
+
+  footer { margin-top: 96px; border-top: 1px solid var(--line); padding-top: 20px; font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; }
+
+  @media (max-width: 820px) {
+    .wrap { padding: 32px 20px 80px; }
+    h1 { font-size: 32px; }
+    .arch { grid-template-columns: 1fr; }
+    .arch .bridge { writing-mode: horizontal-tb; transform: none; padding: 10px; }
+    .pipeline { grid-template-columns: 1fr; gap: 12px; }
+    .arrow { transform: rotate(90deg); }
+    .ladder, .repo-grid, .roles { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="eyebrow">auxfirst · GitHub strategy</div>
+    <h1>The <span class="accent">proof layer</span> for agentic UX.</h1>
+    <p class="lede">
+      The public, inspectable, forkable version of the AUX discipline — the standard, the diagnostics, the
+      evidence. This page shows how the pieces fit and why the architecture compounds.
+    </p>
+  </header>
+
+  <!-- 00 Onboarding / router -->
+  <section>
+    <h2><span class="num">00</span> Who's this for</h2>
+    <p class="sub">Four readers arrive with four fears. Each one gets a slice that pays off in five minutes — not a textbook.</p>
+
+    <div class="roles">
+      <div class="role">
+        <span class="rid">R1</span>
+        <h4>Business operator</h4>
+        <p class="fear">The agents keep breaking and you can't tell why.</p>
+        <div class="take"><strong>5 min →</strong> vocabulary + 10 questions for IT.</div>
+      </div>
+      <div class="role">
+        <span class="rid">R2</span>
+        <h4>CTO / VP Eng</h4>
+        <p class="fear">You'll be asked if your agents are trustworthy.</p>
+        <div class="take"><strong>5 min →</strong> framework + vendor rubric.</div>
+      </div>
+      <div class="role">
+        <span class="rid">R3</span>
+        <h4>Engineering</h4>
+        <p class="fear">You ship something nobody has defined.</p>
+        <div class="take"><strong>5 min →</strong> spec + merge-blocking audit.</div>
+      </div>
+      <div class="role">
+        <span class="rid">R4</span>
+        <h4>Solo / indie</h4>
+        <p class="fear">Reinventing trust patterns alone.</p>
+        <div class="take"><strong>5 min →</strong> two copy-paste patterns.</div>
+      </div>
+    </div>
+
+    <p class="sub" style="margin-top: 18px;">
+      Full router + slices: <strong>onboarding/README.md</strong> &nbsp;·&nbsp; DOCX bundle: <strong>onboarding/auxfirst-onboarding-v0.2.docx</strong>
+    </p>
+  </section>
+
+  <!-- 01 Architecture -->
+  <section>
+    <h2><span class="num">01</span> Architecture</h2>
+    <p class="sub">The internal execution system (AUX Studio) is mirrored by a public standard layer on GitHub. Same taxonomy, different audience.</p>
+
+    <div class="arch">
+      <div class="col private">
+        <h3>Internal</h3>
+        <h4>AUX Studio</h4>
+        <ul>
+          <li>Framework engine</li>
+          <li>Audit engine</li>
+          <li>Trust taxonomy</li>
+          <li>Memory policy generator</li>
+          <li>Teardown templates</li>
+          <li>Dashboards · TrustOps</li>
+        </ul>
+      </div>
+      <div class="bridge">Same taxonomy →</div>
+      <div class="col public">
+        <h3>Public</h3>
+        <h4>github.com/auxfirst</h4>
+        <ul>
+          <li>aux-frameworks</li>
+          <li>aux-audit (CLI)</li>
+          <li>trust-gap-classifier</li>
+          <li>agent-memory-policy</li>
+          <li>agent-ux-teardowns</li>
+          <li>aux-metrics (schemas + samples)</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 Repo roles -->
+  <section>
+    <h2><span class="num">02</span> Three repo roles</h2>
+    <p class="sub">Every repo is exactly one of these. If it doesn't fit, it doesn't ship.</p>
+
+    <div class="repo-grid">
+      <div class="repo">
+        <span class="slug">aux-frameworks</span><span class="kind def">Definition</span>
+        <h4>The standard.</h4>
+        <p>The category-anchor repo. Heuristics, stages, taxonomies — as YAML. This is the Wikipedia page for agentic UX.</p>
+        <div class="output">contains: aux-heuristics.yaml · trust-architecture.yaml · evolution-curve.yaml</div>
+      </div>
+      <div class="repo">
+        <span class="slug">aux-audit</span><span class="kind exec">Executable</span>
+        <h4>The grader.</h4>
+        <p>CLI that runs the frameworks against an agent spec. Emits score, grade, named violations, and CI-ready SARIF.</p>
+        <div class="output">npx aux-audit run ./spec.yaml</div>
+      </div>
+      <div class="repo">
+        <span class="slug">trust-gap-classifier</span><span class="kind exec">Executable</span>
+        <h4>The detector.</h4>
+        <p>Scans agent interaction logs for named trust failures. Turns "it feels off" into a labelled, filed gap.</p>
+        <div class="output">npx trust-gap-classifier scan ./logs/*.jsonl</div>
+      </div>
+      <div class="repo">
+        <span class="slug">agent-memory-policy</span><span class="kind exec">Executable</span>
+        <h4>The bridge.</h4>
+        <p>One config → policy doc + system-prompt snippet + compliance JSON. Product, legal, dev — same source.</p>
+        <div class="output">npx agent-memory-policy gen ./memory.yaml</div>
+      </div>
+      <div class="repo">
+        <span class="slug">agent-ux-teardowns</span><span class="kind ref">Reference</span>
+        <h4>The receipts.</h4>
+        <p>Structured teardowns of shipped products. analysis.md + score.json, schema-validated. Comparable, citable.</p>
+        <div class="output">/teardowns/&lt;product&gt;/ · score.json</div>
+      </div>
+      <div class="repo">
+        <span class="slug">confidence-cues-ui-kit</span><span class="kind ref">Reference</span>
+        <h4>The demo.</h4>
+        <p>One pattern, runnable, clean. "Here's what good looks like." Mini product, not a tutorial.</p>
+        <div class="output">demonstrates: aux.H06 Graceful Uncertainty</div>
+      </div>
+    </div>
+
+    <div class="legend">
+      <span>■ Definition = category ownership</span>
+      <span>■ Executable = dev respect</span>
+      <span>■ Reference = show, don't tell</span>
+    </div>
+  </section>
+
+  <!-- 03 Workflow -->
+  <section>
+    <h2><span class="num">03</span> Workflow · how it runs end-to-end</h2>
+    <p class="sub">The canonical flow: an agent spec goes in, a graded scorecard with named gaps comes out, and the fix pattern is already named.</p>
+
+    <div class="pipeline">
+      <div class="node input">
+        <div class="tag">Input</div>
+        <h4>agent-spec.yaml</h4>
+        <div class="body">Surface, autonomy, memory, tools, flows, guarantees, golden transcripts.</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node process">
+        <div class="tag">Process</div>
+        <h4>aux-audit + classifier</h4>
+        <div class="body">Runs heuristics + trust stages. Replays golden transcripts. Labels gaps against taxonomy.</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node output">
+        <div class="tag">Output</div>
+        <h4>scorecard + fix plan</h4>
+        <div class="body">Score, grade, trust stage, evolution stage, named gaps, fix patterns — all reproducible.</div>
+      </div>
+    </div>
+
+<pre class="snip"><span class="k">score</span>: <span class="n">72</span>
+<span class="k">grade</span>: <span class="s">B</span>
+<span class="k">trust_stage</span>: <span class="s">contextual</span>
+<span class="k">evolution_stage</span>: <span class="s">task-aware</span>
+<span class="k">issues</span>:
+  - <span class="k">id</span>: <span class="s">tg.judgment.overreach_in_ambiguity</span>
+    <span class="k">severity</span>: <span class="s">high</span>
+    <span class="k">evidence</span>: <span class="s">"agent executed multi-step plan with no preview"</span>
+    <span class="k">fix_pattern</span>: <span class="s">intent-handshake</span>
+<span class="k">recommendations</span>:
+  - <span class="s">"Add intent-handshake before multi-step tool use"</span>
+  - <span class="s">"Differentiate gated vs autonomous by user tenure"</span></pre>
+  </section>
+
+  <!-- 04 Trust ladder -->
+  <section>
+    <h2><span class="num">04</span> Trust ladder · the scoring axis</h2>
+    <p class="sub">Every audit places the product on one of four rungs. Trust is built sequentially — and a violation at stage 4 snaps all the way back to stage 1.</p>
+
+    <div class="ladder">
+      <div class="rung t1">
+        <span class="id">aux.T01</span>
+        <h4>Functional</h4>
+        <p class="q">Can it complete basic tasks reliably?</p>
+        <div class="fail">fails on: hallucination · silent_degradation</div>
+      </div>
+      <div class="rung t2">
+        <span class="id">aux.T02</span>
+        <h4>Contextual</h4>
+        <p class="q">Does it remember me?</p>
+        <div class="fail">fails on: memory_amnesia · preference_ignored</div>
+      </div>
+      <div class="rung t3">
+        <span class="id">aux.T03</span>
+        <h4>Judgment</h4>
+        <p class="q">Does it call it right in the ambiguous case?</p>
+        <div class="fail">fails on: overreach · refusal_when_escalation_needed</div>
+      </div>
+      <div class="rung t4">
+        <span class="id">aux.T04</span>
+        <h4>Advocacy</h4>
+        <p class="q">Does it act for me when incentives misalign?</p>
+        <div class="fail">fails on: metric_over_user · incentive_misalignment</div>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>auxfirst · agentic UX as a named discipline</span>
+    <span>v0.1 · 2026-04-19</span>
+  </footer>
+</div>
+</body>
+</html>

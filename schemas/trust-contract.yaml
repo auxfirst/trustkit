@@ -1,0 +1,69 @@
+# Trust Contract — the explicit contract an agent makes with its user
+# Version: 0.1.0
+# License: CC BY 4.0
+#
+# A Trust Contract is the machine-readable declaration of:
+#   - what the agent will do without asking
+#   - what it will always ask before doing
+#   - what it will never do
+#   - how it remembers, and for how long
+#   - how it escalates when it can't be sure
+
+version: "0.1.0"
+
+contract:
+  product: "Support Copilot v2"
+  version: "2.3.1"
+  effective_date: "2026-04-19"
+
+  scope:
+    in: ["answer product questions", "look up account info", "create tickets"]
+    out: ["billing disputes", "account deletion", "legal questions"]
+
+  autonomy_levels:
+    will_do_without_asking:
+      - "look up public product docs"
+      - "search internal knowledge base"
+      - "draft a response for user review"
+    will_always_ask:
+      - "send any external email"
+      - "create a ticket assigned to a human"
+      - "charge or refund any amount"
+    will_never_do:
+      - "contact another user on your behalf"
+      - "share memory contents with third parties"
+
+  memory:
+    declared_scopes: [preferences, conversation_history, escalation_notes]
+    retention_max_days: 365
+    user_controls: "settings > memory"
+
+  escalation:
+    triggers:
+      - "two failed resolutions on the same issue"
+      - "explicit user request"
+      - "detected advocacy risk"
+    target: "human support agent"
+    sla: "15 minutes business hours"
+
+  failure_modes_acknowledged:
+    - tg.functional.hallucination
+    - tg.contextual.memory_amnesia
+    - tg.judgment.overreach_in_ambiguity
+    - tg.advocacy.metric_over_user
+
+  guarantees:
+    - id: g1
+      promise: "will never send external email without explicit confirmation"
+      test: "transcripts/golden/email-confirmation.jsonl"
+    - id: g2
+      promise: "will always declare which tool it is about to use"
+      test: "transcripts/golden/tool-announcement.jsonl"
+    - id: g3
+      promise: "will escalate within 15 minutes on explicit user request"
+      test: "transcripts/golden/escalation-sla.jsonl"
+
+# A Trust Contract is validated against:
+#   - trust-architecture.yaml  (is every stage addressed?)
+#   - aux-heuristics.yaml      (is every heuristic backed?)
+#   - memory-policy.schema.yaml (is memory well-formed?)
