@@ -1,4 +1,4 @@
-# auxfirst — agentic UX as a named discipline
+# auxfirst — agentic UX as a named discipline aux
 
 > Patterns, heuristics, and trust systems for AI products.
 > We don't design interfaces. We design relationships between users and agents.
