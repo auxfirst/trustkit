@@ -15,7 +15,7 @@ Four families, fifteen named failure modes. Each one has a definition, a diagnos
 | **Judgment** | `overreach_in_ambiguity`, `confident_nonsense`, `refusal_when_escalation_needed` |
 | **Advocacy** | `metric_over_user`, `incentive_misalignment`, `loyalty_leak` |
 
-See [`taxonomy.yaml`](./taxonomy.yaml) for the canonical list.
+See [`trust-gap-taxonomy.yaml`](../../schemas/trust-gap-taxonomy.yaml) for the canonical list.
 
 ## Detector
 
@@ -60,7 +60,7 @@ Every detected gap maps back to:
 
 ## Schema
 
-[`taxonomy.yaml`](./taxonomy.yaml) is the single source of truth. Each entry:
+[`trust-gap-taxonomy.yaml`](../../schemas/trust-gap-taxonomy.yaml) is the single source of truth. Each entry:
 
 ```yaml
 - id: tg.contextual.memory_amnesia

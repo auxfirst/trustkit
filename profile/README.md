@@ -63,7 +63,7 @@ The spec format ([`agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml)) 
 
 ## For product & design
 
-Use the **[10 AUX Heuristics](../repos/aux-frameworks/frameworks/aux-heuristics)** and the **[Trust Architecture](../repos/aux-frameworks/frameworks/trust-architecture)** to diagnose, plan, and review. Both are editable YAML — fork, extend, submit a PR.
+Use the **[10 AUX Heuristics](../schemas/aux-heuristics.yaml)** and the **[Trust Architecture](../schemas/trust-architecture.yaml)** to diagnose, plan, and review. Both are editable YAML — fork, extend, submit a PR.
 
 ## For analysts & researchers
 
