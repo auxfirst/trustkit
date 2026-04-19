@@ -1,3 +1,12 @@
+<!--
+  This file is the DESIGN SOURCE for the auxfirst org-page README.
+  The published version lives at:
+    https://github.com/auxfirst/.github/blob/main/profile/README.md
+  and renders on:
+    https://github.com/auxfirst
+  Edit both files in sync.
+-->
+
 # Agentic User Experience (AUX)
 
 > Patterns, heuristics, and trust systems for AI products.
