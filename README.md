@@ -108,7 +108,7 @@ See **[LICENSE](LICENSE)** for the full text and per-repo variation.
 
 ## Status
 
-**v0.2 · 2026-04-19** — Onboarding layer live: audience-routed docs (R1–R4) + five forwardable artifacts + two canonical patterns. `aux-audit` CLI (v0.1 contract) in active development. Next: pressure-test the router with a real CTO reader.
+**v0.2 · 2026-04-19** — First public release. Onboarding layer live: audience-routed docs (R1–R4) + four forwardable artifacts + two canonical patterns + six first-wave repo READMEs + canonical schemas. `aux-audit` CLI (v0.1 contract) in active development. Next: pressure-test the router with a real CTO reader; ship the `aux-audit` binary.
 
 ---
 

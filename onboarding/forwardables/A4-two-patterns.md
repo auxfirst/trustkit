@@ -67,4 +67,4 @@ def memory_in_motion(new_fact, user, memory, notify):
 
 ---
 
-<sub>Full canonical versions: **github.com/auxfirst/agentic-ux-patterns**.</sub>
+<sub>Full canonical versions: **[github.com/auxfirst/trustkit/tree/main/repos/agentic-ux-patterns](https://github.com/auxfirst/trustkit/tree/main/repos/agentic-ux-patterns)** (will split into its own repo as `auxfirst/agentic-ux-patterns` when v0.1 ships).</sub>
