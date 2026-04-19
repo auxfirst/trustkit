@@ -58,16 +58,9 @@ github/
 ├── visuals/
 │   └── storyboard.html            ← single-file visual overview of architecture + flow
 │
-├── one-pager/
-│   └── auxfirst-github-onepager.docx  ← business one-pager (editable)
-│
-└── internal/                      ← ✖ NOT for public upload — founder-only planning
-    ├── LAUNCH_PLAN.md             ← 30-day week-by-week plan
-    ├── internal-status.md         ← R5 slice (founder / collaborator onboarding)
-    └── A5-internal-status.md      ← R5 forwardable
+└── one-pager/
+    └── auxfirst-github-onepager.docx  ← business one-pager (editable)
 ```
-
-**Ship vs. internal.** Everything outside `internal/` is staged for public upload to `github.com/auxfirst`. `internal/` is founder-only — don't upload.
 
 ## Read order
 
@@ -78,7 +71,6 @@ github/
 5. **[repos/](repos/)** — the six first-wave repos.
 6. **[schemas/](schemas/)** — the YAML that makes this real.
 7. **[one-pager/auxfirst-github-onepager.docx](one-pager/auxfirst-github-onepager.docx)** — for business conversations.
-8. **[internal/](internal/)** — *(founder-only)* launch plan, R5 slice, A5 forwardable.
 
 ## Principles
 
