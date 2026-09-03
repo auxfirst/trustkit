@@ -3,6 +3,11 @@
 > Score an agent product against the [10 AUX Heuristics](../../schemas/aux-heuristics.yaml) and the [Trust Architecture](../../schemas/trust-architecture.yaml). Score, grade, violations — reproducible.
 
 ```bash
+# today — from a clone of auxfirst/trustkit
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./agent-spec.yaml
+
+# after npm publish
 npx aux-audit run ./agent-spec.yaml
 ```
 
@@ -33,6 +38,16 @@ Two consequences, both deliberate:
 - **`evolution_stage` is `null`.** The AUX docs reference an Evolution Curve as the capability axis, but no schema publishes its stages. Rather than invent IDs in the `aux.` namespace, the field reports `evolution_stage_status: "schema-undefined"` and stays empty until the curve ships. See [issue tracker](https://github.com/auxfirst/trustkit/issues).
 
 ## Install
+
+**Works today** (from a clone of this repository):
+
+```bash
+npm --prefix packages/aux-audit ci
+npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./agent-spec.yaml
+```
+
+**After `npm publish`** (optional — the GitHub Action does not need this):
 
 ```bash
 npx aux-audit run ./agent-spec.yaml     # no install
