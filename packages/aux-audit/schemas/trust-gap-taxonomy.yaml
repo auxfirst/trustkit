@@ -1,6 +1,6 @@
 # Trust Gap Taxonomy — named failure modes for agent trust
 # Version: 0.1.0
-# License: CC BY 4.0
+# License: MIT (see schemas/LICENSE)
 # Each gap maps to: a heuristic (what broke), a trust stage (what was violated),
 # and a fix pattern (how to close it).
 

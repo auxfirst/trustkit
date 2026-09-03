@@ -36,4 +36,4 @@ Contributors are listed in `CONTRIBUTORS.md` with the IDs / patterns they author
 
 ## License
 
-By contributing you agree your contribution is licensed under the repo's declared license (CC BY 4.0 for definition repos, MIT for executable repos, CC BY-NC 4.0 for teardowns).
+By contributing you agree your contribution is licensed under the license for that artifact type in [LICENSING.md](LICENSING.md): MIT for schemas and tooling, CC BY 4.0 for prose, CC BY-NC 4.0 for teardown content.

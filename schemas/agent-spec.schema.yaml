@@ -1,5 +1,6 @@
 # Agent Spec — input format for `aux-audit`
 # Version: 0.1.0
+# License: MIT (see schemas/LICENSE)
 # A minimal, opinionated description of an agentic product.
 # Fields marked "required" will cause the audit to refuse to run if missing.
 

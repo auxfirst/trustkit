@@ -1,6 +1,6 @@
 # Memory Policy Schema — input for `agent-memory-policy`
 # Version: 0.1.0
-# License: MIT
+# License: MIT (see schemas/LICENSE)
 
 version: "0.1.0"
 

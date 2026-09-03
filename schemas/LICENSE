@@ -22,6 +22,10 @@ SOFTWARE.
 
 ---
 
-The canonical AUX definitions bundled under `schemas/` are MIT as well, and
-carry their own copy of this license. See
-https://github.com/auxfirst/trustkit/blob/main/LICENSING.md.
+This MIT license covers the machine-readable definitions in this directory —
+the .yaml files you embed, vendor, or generate from.
+
+The prose that explains them (onboarding/, the vocabulary appendix, pattern
+write-ups) is CC BY 4.0; see ../LICENSING.md for the full map. Attribution is
+still appreciated everywhere, but it is not a condition of using these files
+in your own code.

@@ -2,7 +2,7 @@
 
 *Executive brief · auxfirst · v0.1*
 
-**Source.** This page adopts **AUX** — an open standard for agentic UX published at **github.com/auxfirst**. Schemas + heuristics are CC BY 4.0; CLIs are MIT. Forkable. Citable. Not vendor-locked.
+**Source.** This page adopts **AUX** — an open standard for agentic UX published at **github.com/auxfirst**. The schemas and the CLI are MIT, so they can go straight into a codebase. Forkable. Citable. Not vendor-locked.
 
 This is the one-page version. The framework is open-standard and forkable.
 
@@ -51,4 +51,4 @@ Adopt the framework with a 90-day pilot on one product. At day 90, the product h
 
 ---
 
-<sub>Source: auxfirst · aux-frameworks, aux-audit · CC BY 4.0.</sub>
+<sub>Source: auxfirst · aux-frameworks, aux-audit · schemas and tooling MIT, this brief CC BY 4.0.</sub>

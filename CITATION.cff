@@ -4,8 +4,8 @@ title: "TrustKit — AUX (Agentic User Experience) heuristics, trust architectur
 abstract: >-
   Canonical, forkable definitions for Agentic User Experience (AUX): the 10 AUX
   Heuristics, the 4-stage Trust Architecture, the Trust Gap Taxonomy, and the
-  agent-spec / memory-policy schemas. Definitions are CC BY 4.0; executable
-  tooling is MIT.
+  agent-spec / memory-policy schemas. The schemas and the tooling are MIT; the
+  prose that explains them is CC BY 4.0. Citation is requested, not required.
 type: software
 authors:
   - name: "auxfirst"
@@ -13,7 +13,9 @@ authors:
     email: "founder@auxfirst.com"
 repository-code: "https://github.com/auxfirst/trustkit"
 url: "https://auxfirst.com"
-license: CC-BY-4.0
+license:
+  - MIT
+  - CC-BY-4.0
 version: "0.2"
 date-released: "2026-04-19"
 keywords:

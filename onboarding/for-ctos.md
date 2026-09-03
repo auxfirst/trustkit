@@ -2,7 +2,7 @@
 
 *You'll be asked if your agents are trustworthy. Here's a defensible framework — and the open standard you can adopt or fork.*
 
-> **AUX** is an open standard for agentic UX published at **github.com/auxfirst** — schemas and heuristics are **CC BY 4.0**, tooling is **MIT**. Fork it, cite it, extend it.
+> **AUX** is an open standard for agentic UX published at **github.com/auxfirst** — the schemas and the tooling are **MIT**, so your team can vendor them without a legal review. The written guides are CC BY 4.0. Fork it, cite it, extend it.
 
 This is the 5-minute version. The long version is **[ARCHITECTURE.md](../ARCHITECTURE.md)**. The executable version is **[aux-audit](../packages/aux-audit/README.md)** (GitHub Action: `auxfirst/trustkit@v0.2`).
 

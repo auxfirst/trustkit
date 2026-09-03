@@ -7,7 +7,7 @@
 
 **Project home: [auxfirst.com](https://auxfirst.com)** · [`aux-audit`](packages/aux-audit/) · [Schemas](schemas/) · [Onboarding](onboarding/README.md) · [Docs](docs/index.md) · [Cite this work](CITATION.cff)
 
-**AUX** (Agentic User Experience) is an open standard. The 10 AUX Heuristics, the 4-stage Trust Architecture, and the Trust Gap Taxonomy are published as editable YAML schemas — forkable, citable, not vendor-locked. Definitions are **CC BY 4.0**; executable tooling is **MIT**.
+**AUX** (Agentic User Experience) is an open standard. The 10 AUX Heuristics, the 4-stage Trust Architecture, and the Trust Gap Taxonomy are published as editable YAML schemas — forkable, citable, not vendor-locked. The schemas are **MIT** — embed them, vendor them, no attribution condition. The prose around them is **CC BY 4.0**.
 
 If you ship AI products, you are no longer designing screens. You are designing an ongoing relationship between a user and an agent that has memory, initiative, and judgment. Classical UX was built for tools. AUX is built for relationships.
 
@@ -103,8 +103,8 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 ├── docs/                          ← static-site copy (canonical path TBD)
 ├── CHANGELOG.md                   ← what shipped
 ├── CITATION.cff                   ← how to cite AUX definitions
-├── LICENSE                        ← CC BY 4.0 (GitHub-detectable legal code)
-├── LICENSING.md                   ← dual-license map (CC BY / MIT / CC BY-NC)
+├── LICENSE                        ← CC BY 4.0 (prose; GitHub-detectable legal code)
+├── LICENSING.md                   ← license map: machine-readable = MIT, prose = CC BY
 └── .github/                       ← Issue templates, PR template, CI
 ```
 
@@ -155,11 +155,13 @@ GitHub renders it behind the *Cite this repository* button as APA or BibTeX.
 
 ## License
 
-- Definition content (schemas, frameworks, heuristics, vocabulary): **CC BY 4.0**.
-- Executable tooling (`packages/aux-audit`, `action.yml`): **MIT**.
+One rule: **machine-readable definitions are MIT, prose is CC BY 4.0.**
+
+- Schemas (`schemas/*.yaml`) and tooling (`packages/aux-audit`, `action.yml`): **MIT**. Embed them; no attribution condition.
+- Prose (onboarding, vocabulary, pattern write-ups): **CC BY 4.0**.
 - Teardown content: **CC BY-NC 4.0** (attribution, non-commercial).
 
-See **[LICENSE](LICENSE)** for the CC BY 4.0 legal code and **[LICENSING.md](LICENSING.md)** for the dual-license map (tooling is MIT).
+GitHub's badge reads CC BY 4.0 because it detects the root **[LICENSE](LICENSE)**, which covers the prose. The schemas are not CC — see **[LICENSING.md](LICENSING.md)** and **[schemas/LICENSE](schemas/LICENSE)**.
 
 ## Status
 

@@ -134,4 +134,4 @@ npm run build
 
 ## License
 
-MIT for the tooling. The bundled AUX definitions under `schemas/` are CC BY 4.0 — see [LICENSE](LICENSE).
+MIT throughout — the CLI and the bundled AUX schemas alike. See [LICENSE](LICENSE).

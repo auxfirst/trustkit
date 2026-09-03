@@ -103,7 +103,7 @@ Every repo has a `CONTRIBUTING.md`. The short version: **patterns need diagrams,
 
 ## License
 
-Definition repos: **CC BY 4.0**. Executable repos: **MIT**. Teardowns: **CC BY-NC 4.0** (attribution, non-commercial).
+Machine-readable definitions and tooling: **MIT** — embed them, no attribution condition. Prose: **CC BY 4.0**. Teardowns: **CC BY-NC 4.0**.
 
 ---
 
