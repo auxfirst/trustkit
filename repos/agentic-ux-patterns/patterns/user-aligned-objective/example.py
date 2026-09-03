@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """User-Aligned Objective — minimal runnable example.
 
 User value and platform value are scored separately and never summed. The user's

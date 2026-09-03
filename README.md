@@ -77,6 +77,7 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │   ├── aux-heuristics.yaml        ← the 10 heuristics
 │   ├── trust-architecture.yaml    ← the 4 trust stages
 │   ├── trust-gap-taxonomy.yaml    ← named failure modes
+│   ├── aux-evolution-curve.yaml   ← the 4 capability stages (teardowns only)
 │   ├── trust-contract.yaml        ← example Trust Contract
 │   ├── agent-spec.schema.yaml     ← audit input format
 │   └── memory-policy.schema.yaml  ← memory governance format
@@ -157,8 +158,8 @@ GitHub renders it behind the *Cite this repository* button as APA or BibTeX.
 
 One rule: **machine-readable definitions are MIT, prose is CC BY 4.0.**
 
-- Schemas (`schemas/*.yaml`) and tooling (`packages/aux-audit`, `action.yml`): **MIT**. Embed them; no attribution condition.
-- Prose (onboarding, vocabulary, pattern write-ups): **CC BY 4.0**.
+- Schemas (`schemas/*.yaml`), pattern examples (`example.py`), and tooling (`packages/aux-audit`, `action.yml`): **MIT**. Embed them; no attribution condition.
+- Prose (onboarding, vocabulary, pattern write-ups and diagrams): **CC BY 4.0**.
 - Teardown content: **CC BY-NC 4.0** (attribution, non-commercial).
 
 GitHub's badge reads CC BY 4.0 because it detects the root **[LICENSE](LICENSE)**, which covers the prose. The schemas are not CC — see **[LICENSING.md](LICENSING.md)** and **[schemas/LICENSE](schemas/LICENSE)**.

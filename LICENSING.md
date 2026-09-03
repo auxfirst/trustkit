@@ -16,8 +16,9 @@ the prose, which is most of the repository by volume. It does not describe
 | Artifact | License | File |
 |---|---|---|
 | **Schemas** — every `.yaml` under [`schemas/`](schemas/) | **MIT** | [`schemas/LICENSE`](schemas/LICENSE) |
+| **Pattern examples** — `example.py` under [`repos/agentic-ux-patterns/`](repos/agentic-ux-patterns/) | **MIT** | `SPDX-License-Identifier` in each file |
 | **Executable tooling** — `packages/aux-audit`, `action.yml` | **MIT** | [`packages/aux-audit/LICENSE`](packages/aux-audit/LICENSE) |
-| **Prose** — onboarding, vocabulary, pattern write-ups, architecture, this file | **CC BY 4.0** | [`LICENSE`](LICENSE) |
+| **Prose** — onboarding, vocabulary, pattern write-ups and diagrams, architecture, this file | **CC BY 4.0** | [`LICENSE`](LICENSE) |
 | **Teardown content** under `repos/agent-ux-teardowns/teardowns/` (when added) | **CC BY-NC 4.0** | declared in that tree |
 
 ## Why the schemas are MIT
@@ -35,6 +36,7 @@ one click. It is just not a condition of use.
 ## What this means in practice
 
 - **Vendoring `aux-heuristics.yaml` into a closed-source product** — fine, MIT.
+- **Copying a pattern's `example.py` into your agent** — fine, MIT. That is what it is for.
 - **Shipping a tool that bundles the schemas** — fine, MIT, which is why the
   copies under `packages/aux-audit/schemas/` need no separate carve-out.
 - **Quoting the onboarding docs in a blog post** — CC BY 4.0, so credit

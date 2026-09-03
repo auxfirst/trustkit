@@ -12,6 +12,8 @@ the CLI does not duplicate heuristic text, IDs, or the trust-stage mapping.
 | [`schemas/agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml) | Audit input |
 | [`schemas/memory-policy.schema.yaml`](../schemas/memory-policy.schema.yaml) | Memory governance |
 
+`aux-evolution-curve.yaml` is the one schema `aux-audit` never reads: capability is assessed by a human in a teardown, not derived from a spec.
+
 License: **MIT** ([`schemas/LICENSE`](../schemas/LICENSE)) — embed or vendor them freely. See [`LICENSING.md`](../LICENSING.md) for the full map.
 
 The Evolution Curve is mentioned in

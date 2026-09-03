@@ -1,0 +1,88 @@
+# Evolution Curve — capability maturity axis
+# Version: 0.1.0
+# License: MIT (see schemas/LICENSE)
+#
+# The second axis, independent of trust. Assessed by a human in a teardown,
+# never computed from an agent spec: a spec states what a product claims,
+# capability is a claim about what it does. See trustkit#5.
+#
+# Referenced by: agent-ux-teardowns
+# NOT referenced by aux-audit — the CLI reports evolution_stage: null by design.
+
+version: "0.1.0"
+name: "Evolution Curve"
+source: "auxfirst"
+axis: capability
+
+principle: >
+  Capability is what the agent can attempt. Trust is whether it should be
+  allowed to. The two move independently, and the dangerous corner of the
+  grid is high capability with low trust — not low capability.
+
+# Unlike the Trust Architecture, this is not a ladder.
+# Trust cascades: one advocacy violation collapses trust back to functional.
+# Capability does not. A product that fails at E04 has not become E01; it has
+# demonstrated E04 unreliably. Nothing is lost, so nothing snaps back.
+cascades: false
+
+stages:
+  - id: aux.E01
+    order: 1
+    name: "Reactive"
+    question: "Does it answer what it is asked, one turn at a time?"
+    observed_when:
+      - "responds to the request in front of it"
+      - "no tool use, or a single tool"
+      - "each turn is independent of the last"
+    not_evidence:
+      - "a long answer — length is not capability"
+
+  - id: aux.E02
+    order: 2
+    name: "Task-Aware"
+    question: "Can it carry a multi-step task to completion?"
+    observed_when:
+      - "holds a goal across several turns without being re-prompted"
+      - "composes two or more tools toward one outcome"
+      - "recovers from a failed step instead of stopping"
+    not_evidence:
+      - "a numbered plan it does not then follow"
+
+  - id: aux.E03
+    order: 3
+    name: "Context-Aware"
+    question: "Does it use the situation, not just the request?"
+    observed_when:
+      - "reads state the user did not hand it"
+      - "acts differently in the same request under different circumstances"
+      - "operates across more than one surface with continuity"
+    not_evidence:
+      - "reciting stored preferences back — that is E02 with memory"
+
+  - id: aux.E04
+    order: 4
+    name: "Personally Intelligent"
+    question: "Does it adapt to this particular user over time?"
+    observed_when:
+      - "behaviour differs between two users beyond their stored preferences"
+      - "the difference grows with use rather than being configured"
+    not_evidence:
+      - "a settings page"
+      - "a preference the user typed once and the agent replays"
+
+assessment:
+  by: human
+  in: "repos/agent-ux-teardowns"
+  # A product sits at one stage: the highest it reaches *reliably*.
+  scoring: ordinal
+  reliability_threshold: 2
+  reliability_rule: >
+    A stage counts only when the teardown demonstrates it in at least two
+    distinct scenarios. One clever transcript is an anecdote; the curve
+    describes what a user can rely on.
+  # Capability is frequently uneven across surfaces. Record it rather than
+  # averaging it away — the spread is often the finding.
+  per_surface: optional
+  evidence_required: >
+    Every stage claim cites a reproducible scenario, per CONTRIBUTING. No
+    stage is assigned from a product's marketing or its own documentation.

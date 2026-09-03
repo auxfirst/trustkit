@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Memory in Motion — minimal runnable example.
 
 Run with: python example.py
