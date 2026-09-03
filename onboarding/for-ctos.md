@@ -4,7 +4,7 @@
 
 > **AUX** is an open standard for agentic UX published at **github.com/auxfirst** — schemas and heuristics are **CC BY 4.0**, tooling is **MIT**. Fork it, cite it, extend it.
 
-This is the 5-minute version. The long version is **[ARCHITECTURE.md](../ARCHITECTURE.md)**. The executable version is **[aux-audit](../repos/aux-audit/README.md)**.
+This is the 5-minute version. The long version is **[ARCHITECTURE.md](../ARCHITECTURE.md)**. The executable version is **[aux-audit](../packages/aux-audit/README.md)** (GitHub Action: `auxfirst/trustkit@v0.2`).
 
 ---
 
@@ -42,11 +42,20 @@ A Trust Contract without guarantees-backed-by-tests is a marketing page. Don't s
 
 `aux-audit` runs the 10 heuristics + 4 trust stages against an agent spec and emits a score, a grade, and named violations. It emits SARIF, which means it can block merges in CI the same way your static-analyzer does.
 
-> *v0.1 — CLI contract published, binary in active development. The command below describes the intended invocation; follow [aux-audit](../repos/aux-audit/README.md) for the ship date.*
+> *v0.1 ships as a GitHub Action. It grades the spec, not the running product.*
+
+```yaml
+- uses: auxfirst/trustkit@v0.2
+  with:
+    spec: ./spec.yaml
+    fail-on: high
+```
+
+Copy-paste workflow: **[forwardables/A3-aux-audit.yml](forwardables/A3-aux-audit.yml)**. From a clone of this repo, without npm:
 
 ```bash
-# v0.1 contract
-npx aux-audit run ./spec.yaml --format sarif --fail-on high
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./spec.yaml --format sarif --fail-on high
 ```
 
 What this gives you:

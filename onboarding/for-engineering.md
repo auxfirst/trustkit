@@ -36,16 +36,17 @@ Full schema: **[schemas/agent-spec.schema.yaml](../schemas/agent-spec.schema.yam
 
 ## 2 · Running aux-audit
 
-> **Status — v0.1 contract · CLI in development.** The commands below describe the v0.1 invocation. The binary isn't on npm yet; follow [aux-audit](../repos/aux-audit/README.md) for the ship date. You can still adopt the spec format today and wire the workflow file in advance.
+> **Status — v0.1 implemented.** In CI use the Action. Locally, clone this repo and build — `npx aux-audit` works after the package is on npm.
 
-Locally (v0.1 contract):
+Locally (from a clone of [auxfirst/trustkit](https://github.com/auxfirst/trustkit)):
 
 ```bash
-npx aux-audit run ./spec.yaml
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./spec.yaml
 # → score, grade, named gaps, recommendations
 ```
 
-In CI (v0.1 contract):
+In CI:
 
 ```yaml
 # .github/workflows/aux-audit.yml
@@ -58,9 +59,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with: { node-version: 20 }
-      - run: npx aux-audit run ./spec.yaml --format sarif --out audit.sarif --fail-on high
+      - uses: auxfirst/trustkit@v0.2
+        with:
+          spec: ./spec.yaml
+          fail-on: high
       - uses: github/codeql-action/upload-sarif@v3
         if: always()
         with: { sarif_file: audit.sarif }

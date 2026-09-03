@@ -14,7 +14,7 @@ Two tables. One for GitHub words (useful to R1 and R4 if they venture there). On
 | **PR / pull request** | A proposed change to a repo, visible and reviewable before it lands. |
 | **Fork** | Your own copy of a repo. What you do when you want to extend or dissent. |
 | **Star** | A bookmark. Used as a weak popularity signal. |
-| **CLI** | A tool you run from a terminal. `npx aux-audit run ./spec.yaml` is a CLI invocation. |
+| **CLI** | A tool you run from a terminal. `node packages/aux-audit/dist/cli.js run ./spec.yaml` is a CLI invocation; `npx aux-audit` is the same after npm publish. |
 | **CI / CI pipeline** | Automation that runs on every code change. Where `aux-audit` becomes merge-blocking. |
 | **SARIF** | A standard file format for code-scan findings. What CI tools read to surface violations. |
 | **YAML** | A human-readable config format. Every AUX schema is YAML. |

@@ -24,7 +24,7 @@ If you ship AI products, you are no longer designing screens. You are designing 
 | Entry point | What it is | Use when |
 |---|---|---|
 | **[aux-frameworks](../repos/aux-frameworks)** | Methodology as code. Audits, taxonomies, scorecards as YAML. | You want the standard. |
-| **[aux-audit](../repos/aux-audit)** | `npx aux-audit` — a CLI (v0.1 contract · binary in development) that scores an agent product against the 10 heuristics. | You want a grade, not an opinion. |
+| **[aux-audit](../packages/aux-audit)** | GitHub Action `auxfirst/trustkit@v0.2` — scores an agent spec against the 10 heuristics. | You want a grade, not an opinion. |
 | **[trust-gap-classifier](../repos/trust-gap-classifier)** | A taxonomy + detector for how agent trust breaks. | You want shared language for failures. |
 | **[agent-memory-policy](../repos/agent-memory-policy)** | Generate memory governance policy + system-prompt snippets from a config. | Product, compliance, and devs need to agree. |
 | **[agent-ux-teardowns](../repos/agent-ux-teardowns)** | Structured teardowns of shipped AI products. | You want receipts, not vibes. |
@@ -53,13 +53,21 @@ This is the **proof layer** for the category — every claim ships with a schema
 
 Every tool ships as a CLI. Every framework ships as YAML/JSON. Every claim ships with a reproducible scenario.
 
-```bash
-# aux-audit v0.1 contract — CLI in active development
-npx aux-audit run ./agent-spec.json
-# → score: 72  grade: B  issues: [trust_gap, memory_amnesia]
+```yaml
+- uses: auxfirst/trustkit@v0.2
+  with:
+    spec: ./agent-spec.yaml
+    fail-on: high
 ```
 
-The spec format ([`agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml)) and rule set ([`aux-heuristics.yaml`](../schemas/aux-heuristics.yaml)) are published today. The binary follows — see [`aux-audit`](../repos/aux-audit).
+From a clone, without npm:
+
+```bash
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./agent-spec.yaml
+```
+
+The spec format ([`agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml)) and rule set ([`aux-heuristics.yaml`](../schemas/aux-heuristics.yaml)) drive the CLI. See [`packages/aux-audit`](../packages/aux-audit).
 
 ## For product & design
 

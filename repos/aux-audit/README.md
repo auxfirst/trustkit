@@ -5,6 +5,11 @@
 > **Status — v0.1 implemented.** The CLI lives at **[`packages/aux-audit`](../../packages/aux-audit/)** in this repository: validator, rule set, scorer, and Markdown/JSON/SARIF output, with a GitHub Action wrapper at [`action.yml`](../../action.yml). From a clone: `npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build`. `npx aux-audit` works after the package is published to npm.
 
 ```bash
+# today — from a clone of this repo
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./agent-spec.yaml
+
+# after npm publish
 npx aux-audit run ./agent-spec.yaml
 ```
 
@@ -45,10 +50,27 @@ Because AUX claims need to be **inspectable and reproducible.** A score that can
 
 ## Install
 
+**Works today**
+
+```bash
+# CI
+- uses: auxfirst/trustkit@v0.2
+  with:
+    spec: ./agent-spec.yaml
+    fail-on: high
+
+# local, from a clone of auxfirst/trustkit
+npm --prefix packages/aux-audit ci
+npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./spec.yaml
+```
+
+**After `npm publish`** (optional — not required for the Action)
+
 ```bash
 npm i -g aux-audit
 # or one-shot:
-npx aux-audit run ./spec.json
+npx aux-audit run ./spec.yaml
 ```
 
 ## Agent spec format
@@ -67,8 +89,11 @@ flows: ["./flows/handoff.md", "./flows/refund.md"]
 ## Use in CI
 
 ```yaml
-# .github/workflows/aux-audit.yml
-- run: npx aux-audit run ./spec.yaml --format sarif --fail-on high
+# .github/workflows/aux-audit.yml — copy-paste: onboarding/forwardables/A3-aux-audit.yml
+- uses: auxfirst/trustkit@v0.2
+  with:
+    spec: ./spec.yaml
+    fail-on: high
 ```
 
 Failing the build on `severity: high` makes AUX a merge-blocking check, not a slide.
