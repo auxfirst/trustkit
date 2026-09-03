@@ -2,6 +2,8 @@
 
 > The agent visibly updates its memory *in front of the user*, at the moment new information arrives, with a one-click edit.
 
+![A preference stated in session one is written to a scoped, user-visible store and recalled in session two.](./diagram.svg)
+
 - **Heuristic:** `aux.H08` Context Efficiency
 - **Closes gap:** `tg.contextual.memory_amnesia`
 - **Trust stage:** `aux.T02` Contextual

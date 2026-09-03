@@ -9,20 +9,34 @@ This is a **Reference** repo. Every pattern here:
 
 ## Patterns
 
-| Slug | Closes | Heuristic |
-|---|---|---|
-| **[intent-handshake](./patterns/intent-handshake)** | `tg.judgment.overreach_in_ambiguity` | `aux.H01` |
-| **[memory-in-motion](./patterns/memory-in-motion)** | `tg.contextual.memory_amnesia` | `aux.H08` |
+Seven patterns close all **12 named gaps** in [`trust-gap-taxonomy.yaml`](../../schemas/trust-gap-taxonomy.yaml). Coverage is enforced in CI by [`check-coverage.py`](./check-coverage.py) — adding a gap without a pattern fails the build.
+
+| Pattern | Closes | Heuristic | Trust stage |
+|---|---|---|---|
+| **[intent-handshake](./patterns/intent-handshake)** | `tg.judgment.overreach_in_ambiguity` | `aux.H01` | `aux.T03` |
+| **[memory-in-motion](./patterns/memory-in-motion)** | `tg.contextual.memory_amnesia`<br>`tg.contextual.preference_ignored` | `aux.H08` | `aux.T02` |
+| **[confidence-cues](./patterns/confidence-cues)** | `tg.functional.hallucination`<br>`tg.judgment.confident_nonsense` | `aux.H06` | `aux.T01`, `aux.T03` |
+| **[behavioral-contract](./patterns/behavioral-contract)** | `tg.functional.silent_degradation`<br>`tg.functional.inconsistent_output` | `aux.H10` | `aux.T01` |
+| **[memory-policy-scoping](./patterns/memory-policy-scoping)** | `tg.contextual.context_leak` | `aux.H08` | `aux.T02` |
+| **[escalation-handoff](./patterns/escalation-handoff)** | `tg.judgment.refusal_when_escalation_needed` | `aux.H07` | `aux.T03` |
+| **[user-aligned-objective](./patterns/user-aligned-objective)** | `tg.advocacy.metric_over_user`<br>`tg.advocacy.incentive_misalignment`<br>`tg.advocacy.loyalty_leak` | `aux.H07` | `aux.T04` |
+
+Every pattern ships four files. `example.py` is runnable as-is: `python patterns/<slug>/example.py`.
 
 ## Pattern template
 
 ```
 /patterns/<slug>/
-├── README.md            # what, why, when, how
-├── diagram.svg          # one diagram
-├── example.{py,ts,...}  # runnable
+├── README.md            # what, why, when, how — embeds the diagram
+├── diagram.svg          # one diagram, light/dark aware
+├── example.py           # runnable: python example.py
 └── anti-pattern.md      # what this is not
 ```
+
+The anti-pattern is not decoration. Every one of these failure modes ships in
+real products *because it looks like the pattern* — hedging every sentence
+looks like calibration, a snapshot test looks like a contract, a `user_id`
+filter looks like scoping. Naming the near-miss is most of the work.
 
 ## Contributing
 

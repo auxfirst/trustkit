@@ -5,6 +5,7 @@
 #   - YAML syntax errors in /schemas/
 #   - broken internal links across onboarding/forwardables/repos
 #   - aux-audit failing its own test suite, or drifting from the canonical schemas
+#   - a taxonomy gap with no pattern, or a pattern missing one of its four files
 #
 # Local repro:
 #   yamllint schemas/ .github/
@@ -22,6 +23,7 @@ on:
       - "profile/**"
       - "docs/**"
       - "packages/**"
+      - "repos/agentic-ux-patterns/**"
       - "action.yml"
       - "*.md"
       - ".github/workflows/**"
@@ -110,3 +112,21 @@ jobs:
           if node dist/cli.js run fixtures/invalid-spec.yaml > /dev/null 2>&1; then
             echo "expected an invalid spec to be refused"; exit 1
           fi
+
+  patterns:
+    name: pattern coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install --quiet pyyaml
+
+      # CONTRIBUTING says a pattern PR is rejected if any of the four files are
+      # missing, and the patterns README claims every named gap is closed.
+      # Both are executed here rather than trusted.
+      - name: Every gap closed, every pattern complete, every example runnable
+        run: python repos/agentic-ux-patterns/check-coverage.py

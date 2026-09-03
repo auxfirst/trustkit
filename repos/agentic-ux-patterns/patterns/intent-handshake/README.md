@@ -2,6 +2,8 @@
 
 > Before the agent executes, it shows the plan. When the stakes warrant, it waits for a green light.
 
+![Plan, then a stakes check: low-stakes work executes, non-trivial work is previewed and waits for ok, edit, or cancel.](./diagram.svg)
+
 - **Heuristic:** `aux.H01` Visibility of Agent Intent & Action
 - **Closes gap:** `tg.judgment.overreach_in_ambiguity`
 - **Trust stage:** `aux.T03` Judgment
