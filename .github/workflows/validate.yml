@@ -8,7 +8,7 @@
 #
 # Local repro:
 #   yamllint schemas/ .github/
-#   lychee --offline --no-progress --include-fragments '**/*.md'
+#   lychee --offline --no-progress --include-fragments=full --include-mail=false '**/*.md'
 #   npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit test
 
 name: validate
@@ -59,11 +59,12 @@ jobs:
       - name: Check links (offline + relative paths)
         uses: lycheeverse/lychee-action@v2
         with:
+          lycheeVersion: v0.24.2
           args: >-
             --offline
             --no-progress
-            --include-fragments
-            --exclude-mail
+            --include-fragments=full
+            --include-mail=false
             --exclude '^https?://'
             './**/*.md'
           fail: true
