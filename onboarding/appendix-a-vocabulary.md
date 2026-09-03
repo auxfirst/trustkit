@@ -33,5 +33,5 @@ Two tables. One for GitHub words (useful to R1 and R4 if they venture there). On
 | **Memory policy** | Declared scopes, retention, and user controls for persistent memory. | [schemas/memory-policy.schema.yaml](../schemas/memory-policy.schema.yaml) |
 | **Pattern** | A named, reusable design move that closes a specific gap. | [repos/agentic-ux-patterns](../repos/agentic-ux-patterns/README.md) |
 | **Teardown** | A structured review of a shipped product: `analysis.md` + `score.json`. | [repos/agent-ux-teardowns](../repos/agent-ux-teardowns/README.md) |
-| **Evolution curve** | The capability axis, independent of trust. **No schema yet** — `aux-audit` reports `schema-undefined` rather than inventing stages. | referenced from [schemas/trust-architecture.yaml](../schemas/trust-architecture.yaml); tracked as a schema Issue |
+| **Evolution curve** | The capability axis. Assessed by a human in a teardown, never computed from a spec — a spec says what a product claims, capability is what it does. Stage names are still open. | [trustkit#5](https://github.com/auxfirst/trustkit/issues/5); home is [repos/agent-ux-teardowns](../repos/agent-ux-teardowns) |
 | **Definition / Executable / Reference** | The three kinds of repo. Every repo is exactly one. | [REPO_STRUCTURE.md](../REPO_STRUCTURE.md) |

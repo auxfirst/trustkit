@@ -22,8 +22,9 @@ npx aux-audit run ./agent-spec.yaml
 - **Exit codes:** `0` clean · `1` findings at or above `--fail-on` · `2` invalid spec (nothing graded).
 
 The audit grades the **spec**, not the running product. Level 3 (“robust”) is
-unreachable without evaluation transcripts. `evolution_stage` stays `null` until
-an Evolution Curve schema is published.
+unreachable without evaluation transcripts. `evolution_stage` is always `null`:
+capability is what a product *does*, which a spec cannot state, so it is
+assessed by a human in a teardown ([#5](https://github.com/auxfirst/trustkit/issues/5)).
 
 ## GitHub Action
 

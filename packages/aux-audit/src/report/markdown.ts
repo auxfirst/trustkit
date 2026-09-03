@@ -86,7 +86,7 @@ export function toMarkdown(report: AuditReport): string {
   lines.push(
     `<sub>aux-audit ${report.meta.tool_version} · heuristics ${report.meta.heuristics_version} · trust architecture ${report.meta.trust_architecture_version} · taxonomy ${report.meta.taxonomy_version}. ` +
       `Scores describe the **spec**, not the running product: aux-audit can prove a mechanism was never declared, never that a declared one works. ` +
-      `Capability axis (\`evolution_stage\`) is omitted — the Evolution Curve has no published schema. ` +
+      `Capability axis (\`evolution_stage\`) is not scored here by design: a spec states what a product claims, not what it does. ` +
       `[The standard](https://github.com/auxfirst/trustkit) · [auxfirst.com](https://auxfirst.com)</sub>`,
   );
   lines.push("");

@@ -121,10 +121,13 @@ test("the report is deterministic for the same spec", () => {
   assert.deepEqual(audit(spec, { now }), audit(spec, { now }));
 });
 
-test("evolution_stage stays null while the Evolution Curve has no schema", () => {
-  const report = strong();
-  assert.equal(report.evolution_stage, null);
-  assert.equal(report.evolution_stage_status, "schema-undefined");
+test("evolution_stage is permanently out of scope, not pending", () => {
+  // trustkit#5 option B: capability is assessed by a human in teardowns,
+  // never computed from a spec. The status must not read as future work.
+  for (const report of [strong(), weak()]) {
+    assert.equal(report.evolution_stage, null);
+    assert.equal(report.evolution_stage_status, "human-assessed");
+  }
 });
 
 test("level 3 requires evidence — a spec with no transcripts is capped at present", () => {

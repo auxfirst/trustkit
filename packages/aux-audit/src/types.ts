@@ -70,12 +70,17 @@ export interface AuditReport {
   grade: Grade;
   trust_stage: string | null;
   /**
-   * Null until the Evolution Curve is published as a schema. The capability
-   * axis is referenced by the AUX docs but has no canonical stage list, and
-   * aux-audit will not invent IDs in the `aux.` namespace.
+   * Always null, by design — not pending.
+   *
+   * A spec describes what a product *declares about itself*; capability is a
+   * claim about what it actually does. No schema turns a declaration into an
+   * observation, so the Evolution Curve is assessed by a human in
+   * `agent-ux-teardowns` and is out of scope for this tool permanently.
+   *
+   * Decided in auxfirst/trustkit#5 (option B).
    */
   evolution_stage: null;
-  evolution_stage_status: "schema-undefined";
+  evolution_stage_status: "human-assessed";
   heuristics: HeuristicResult[];
   trust_stages: TrustStageResult[];
   issues: Issue[];

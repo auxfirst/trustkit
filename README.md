@@ -163,7 +163,7 @@ See **[LICENSE](LICENSE)** for the CC BY 4.0 legal code and **[LICENSING.md](LIC
 
 ## Status
 
-**v0.2 · 2026-04-19** — First public release. Onboarding layer live: audience-routed docs (R1–R4) + four forwardable artifacts + two canonical patterns + six first-wave repo READMEs + canonical schemas. `aux-audit` v0.1 is implemented, tested, and wired into CI as a GitHub Action. Next: `npm publish` so `npx aux-audit` resolves without a clone; list the Action on the Marketplace; publish a schema for the Evolution Curve, which `aux-audit` currently reports as `schema-undefined`.
+**v0.2 · 2026-04-19** — First public release. Onboarding layer live: audience-routed docs (R1–R4) + four forwardable artifacts + two canonical patterns + six first-wave repo READMEs + canonical schemas. `aux-audit` v0.1 is implemented, tested, and wired into CI as a GitHub Action. Seven patterns close all 12 named trust gaps, enforced in CI. Next: `npm publish` so `npx aux-audit` resolves without a clone; list the Action on the Marketplace; name the Evolution Curve stages for teardowns ([#5](https://github.com/auxfirst/trustkit/issues/5) — the axis is human-assessed, not something `aux-audit` computes).
 
 ---
 
