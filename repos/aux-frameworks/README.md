@@ -14,9 +14,6 @@
   /trust-architecture       # 4-stage trust maturity ladder
     schema.yaml
     stages.yaml
-  /aux-evolution-curve      # capability maturity axis
-    schema.yaml
-    stages.yaml
   /aux-audit                # audit rules derived from the above
     schema.yaml
     rules.yaml

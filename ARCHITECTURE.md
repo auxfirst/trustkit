@@ -48,7 +48,7 @@ Every other artifact — audit rules, teardown scores, memory policies, Trust Co
   │  aux-audit                                             │
   │   1. validate spec against agent-spec.schema.yaml      │
   │   2. run heuristic rules (aux-heuristics.yaml)         │
-  │   3. place on trust + evolution axes                   │
+  │   3. place on the trust axis (capability: see #5)      │
   │   4. classify gaps (trust-gap-taxonomy.yaml)           │
   │   5. emit Markdown + JSON + SARIF                      │
   └────────────────────────────────────────────────────────┘

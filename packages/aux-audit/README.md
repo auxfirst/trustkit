@@ -35,7 +35,7 @@ Change the YAML in `schemas/`, and the audit changes with it. No heuristic text,
 Two consequences, both deliberate:
 
 - **Level 3 requires evidence.** "Robust" means *works under novel, adversarial, or edge cases* — prose cannot demonstrate that. A spec with no `evaluation.golden_transcripts` or `evaluation.failure_transcripts` is capped at level 2 on every heuristic, however well written. This is what stops the score from being gamed by rewriting guarantees.
-- **`evolution_stage` is `null`.** The AUX docs reference an Evolution Curve as the capability axis, but no schema publishes its stages. Rather than invent IDs in the `aux.` namespace, the field reports `evolution_stage_status: "schema-undefined"` and stays empty until the curve ships. See [issue tracker](https://github.com/auxfirst/trustkit/issues).
+- **`evolution_stage` is always `null` — by design, not pending.** A spec states what a product *claims about itself*; capability is a claim about what it *does*. No schema turns a declaration into an observation, so the Evolution Curve is assessed by a human in [`agent-ux-teardowns`](../../repos/agent-ux-teardowns) and this tool reports `evolution_stage_status: "human-assessed"`. Decided in [trustkit#5](https://github.com/auxfirst/trustkit/issues/5).
 
 ## Install
 

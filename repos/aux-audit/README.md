@@ -18,7 +18,7 @@ npx aux-audit run ./agent-spec.yaml
 score: 72
 grade: B
 trust_stage: contextual
-evolution_stage: null          # schema-undefined until the Evolution Curve ships
+evolution_stage: null          # human-assessed in teardowns, never computed here
 issues:
   - id: aux.H01
     type: visibility_of_intent
@@ -41,7 +41,7 @@ recommendations:
 
 1. **Parses** an agent spec (JSON/YAML describing the product: surface, memory model, tool use, autonomy model, failure handling).
 2. **Runs** the rule set from [`aux-frameworks`](../aux-frameworks) against it.
-3. **Scores** trust maturity from the Trust Architecture. Capability (`evolution_stage`) is `null` until an Evolution Curve schema is published.
+3. **Scores** trust maturity from the Trust Architecture. Capability (`evolution_stage`) is always `null` here — it is assessed by a human in [`agent-ux-teardowns`](../agent-ux-teardowns), per [trustkit#5](https://github.com/auxfirst/trustkit/issues/5).
 4. **Emits** a scored report as Markdown, JSON, or SARIF (for CI integration).
 
 ## Why CLI-first

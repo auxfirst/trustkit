@@ -202,7 +202,7 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
     grade: grade(score),
     trust_stage,
     evolution_stage: null,
-    evolution_stage_status: "schema-undefined",
+    evolution_stage_status: "human-assessed",
     heuristics,
     trust_stages,
     issues,

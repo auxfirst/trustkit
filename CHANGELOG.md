@@ -33,6 +33,7 @@ Publishing the GitHub release and tagging `v0.2` is a manual step after merge.
 
 ### Notes
 
-- `evolution_stage` is reported as `schema-undefined`. The Evolution Curve is
-  referenced in docs but has no schema; the CLI will not mint `aux.` IDs.
+- `evolution_stage` is reported as `human-assessed` and is always `null`. The
+  capability axis is scored by a human in a teardown, not derived from a spec
+  ([#5](https://github.com/auxfirst/trustkit/issues/5)).
 - A spec with no evaluation transcripts is capped at heuristic level 2.
