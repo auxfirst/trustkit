@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 222" width="720" height="222" role="img" aria-label="Escalation Handoff: route with context, refuse only when no route exists">
+  <title>Escalation Handoff: route with context, refuse only when no route exists</title>
+  <style>
+    .bg   { fill: #ffffff; }
+    .box  { fill: #f6f7f9; stroke: #c7ccd4; stroke-width: 1.5; }
+    .box.accent { fill: #eef2ff; stroke: #7c85f0; }
+    .box.warn   { fill: #fdf1ec; stroke: #e08c68; }
+    .box.good   { fill: #edf7f0; stroke: #6fae86; }
+    .t    { fill: #23272e; font: 13px ui-sans-serif, system-ui, sans-serif; }
+    .t.sm { font-size: 11px; fill: #5b636e; }
+    .t.b  { font-weight: 600; }
+    .ln   { stroke: #9aa2ad; stroke-width: 1.5; fill: none; }
+    .ln.cut { stroke: #d0705a; stroke-dasharray: 5 4; }
+    @media (prefers-color-scheme: dark) {
+      .bg   { fill: #0d1117; }
+      .box  { fill: #171b21; stroke: #39414d; }
+      .box.accent { fill: #1b1f3a; stroke: #6c76de; }
+      .box.warn   { fill: #2b1c16; stroke: #b8714f; }
+      .box.good   { fill: #14261b; stroke: #4f8c67; }
+      .t    { fill: #e5e9ef; }
+      .t.sm { fill: #98a1ad; }
+      .ln   { stroke: #626b78; }
+      .ln.cut { stroke: #c9705c; }
+    }
+  </style>
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9aa2ad"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="720" height="222"/>
+  <rect class="box warn" x="20" y="74" width="130" height="52" rx="7"/>
+  <text class="t b" x="85.0" y="97.0" text-anchor="middle">blocked</text>
+  <text class="t sm" x="85.0" y="114.0" text-anchor="middle">limit / policy / 2 fails</text>
+  <rect class="box accent" x="195" y="74" width="130" height="52" rx="7"/>
+  <text class="t b" x="260.0" y="97.0" text-anchor="middle">route exists?</text>
+  <text class="t sm" x="260.0" y="114.0" text-anchor="middle">policy table</text>
+  <rect class="box good" x="375" y="14" width="180" height="52" rx="7"/>
+  <text class="t b" x="465.0" y="37.0" text-anchor="middle">handoff</text>
+  <text class="t sm" x="465.0" y="54.0" text-anchor="middle">destination + packet</text>
+  <rect class="box warn" x="375" y="134" width="180" height="52" rx="7"/>
+  <text class="t b" x="465.0" y="157.0" text-anchor="middle">refusal</text>
+  <text class="t sm" x="465.0" y="174.0" text-anchor="middle">and says why none</text>
+  <path class="ln " d="M150,100 L195,100" marker-end="url(#a)"/>
+  <path class="ln " d="M325,100 H350"/>
+  <path class="ln " d="M350,40 V160"/>
+  <path class="ln " d="M350,40 H375" marker-end="url(#a)"/>
+  <path class="ln " d="M350,160 H375" marker-end="url(#a)"/>
+  <text class="t sm" x="618" y="44" text-anchor="middle">user is done</text>
+  <text class="t sm" x="618" y="164" text-anchor="middle">not a dead end</text>
+  <text class="t sm" x="360" y="208" text-anchor="middle">the packet is what makes it a route rather than a refusal with a label</text>
+</svg>
