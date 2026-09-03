@@ -80,4 +80,4 @@ Every detected gap maps back to:
 
 ## License
 
-CC BY 4.0 for the taxonomy. MIT for the detector code.
+MIT — both the taxonomy YAML and the detector code. Embed either.

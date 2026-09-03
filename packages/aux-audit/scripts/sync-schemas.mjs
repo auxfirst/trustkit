@@ -22,6 +22,8 @@ const FILES = [
   "trust-architecture.yaml",
   "trust-gap-taxonomy.yaml",
   "agent-spec.schema.yaml",
+  // The schemas are MIT and say so next to themselves, in the tarball too.
+  "LICENSE",
 ];
 
 const check = process.argv.includes("--check");

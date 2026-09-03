@@ -1,6 +1,6 @@
 # AUX Heuristics — canonical definition
 # Version: 0.1.0
-# License: CC BY 4.0
+# License: MIT (see schemas/LICENSE)
 # Referenced by: aux-audit, trust-gap-classifier, agent-ux-teardowns
 
 version: "0.1.0"

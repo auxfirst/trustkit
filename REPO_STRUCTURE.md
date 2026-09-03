@@ -24,7 +24,7 @@ Every repo name should read like a **reference in a paper**, not a product.
 
 | Kind | Purpose | Primary content | Primary license |
 |---|---|---|---|
-| **Definition** | Own the language | Markdown + YAML schemas | CC BY 4.0 |
+| **Definition** | Own the language | Markdown + YAML schemas | MIT (schemas) / CC BY 4.0 (prose) |
 | **Executable** | Earn dev respect | CLI / scanner / linter | MIT |
 | **Reference** | Show what good looks like | One pattern, runnable | CC BY 4.0 / MIT |
 

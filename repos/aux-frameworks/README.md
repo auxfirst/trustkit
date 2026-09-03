@@ -48,4 +48,4 @@ SemVer on the framework level. Breaking change = renumber or remove a rule. Chan
 
 ## License
 
-CC BY 4.0. Use it. Attribute it. Extend it.
+MIT for the YAML you embed; CC BY 4.0 for the prose that explains it. Use it. Extend it. Attribution is wanted, not required.

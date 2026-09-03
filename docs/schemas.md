@@ -12,7 +12,7 @@ the CLI does not duplicate heuristic text, IDs, or the trust-stage mapping.
 | [`schemas/agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml) | Audit input |
 | [`schemas/memory-policy.schema.yaml`](../schemas/memory-policy.schema.yaml) | Memory governance |
 
-License: **CC BY 4.0**. See [`LICENSING.md`](../LICENSING.md).
+License: **MIT** ([`schemas/LICENSE`](../schemas/LICENSE)) — embed or vendor them freely. See [`LICENSING.md`](../LICENSING.md) for the full map.
 
 The Evolution Curve is mentioned in
 [`onboarding/appendix-a-vocabulary.md`](../onboarding/appendix-a-vocabulary.md)

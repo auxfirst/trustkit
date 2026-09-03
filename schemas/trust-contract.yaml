@@ -1,6 +1,6 @@
 # Trust Contract — the explicit contract an agent makes with its user
 # Version: 0.1.0
-# License: CC BY 4.0
+# License: MIT (see schemas/LICENSE)
 #
 # A Trust Contract is the machine-readable declaration of:
 #   - what the agent will do without asking
