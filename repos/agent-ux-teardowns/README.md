@@ -31,7 +31,7 @@ Every `analysis.md`:
 3. **Where the contract breaks** — named failures from [`trust-gap-classifier`](../trust-gap-classifier).
 4. **Heuristic scorecard** — 10 heuristics, scored 0–3, with evidence.
 5. **Trust stage** — placed on the Trust Architecture ladder.
-6. **Evolution stage** — placed on the capability axis. This is the *only* place the capability axis is assessed: `aux-audit` reads a spec, and a spec states what a product claims rather than what it does. Stage names are still open — see [trustkit#5](https://github.com/auxfirst/trustkit/issues/5) — so `evolution_stage` stays `null` in teardowns until they land.
+6. **Evolution stage** — placed on the capability axis, per [`aux-evolution-curve.yaml`](../../schemas/aux-evolution-curve.yaml). This is the *only* place that axis is assessed: `aux-audit` reads a spec, and a spec states what a product claims rather than what it does. A stage counts only when two distinct scenarios demonstrate it — one clever transcript is an anecdote. Capability is often uneven across surfaces, so record the spread in `evolution_surfaces` rather than averaging it away.
 7. **The fix** — one concrete pattern that would move it up a stage.
 
 Every `score.json`:
@@ -41,7 +41,8 @@ Every `score.json`:
   "product": "ChatGPT",
   "version": "4o, 2026-04",
   "trust_stage": "contextual",
-  "evolution_stage": null,
+  "evolution_stage": "aux.E03",
+  "evolution_surfaces": { "web": "aux.E03", "api": "aux.E01" },
   "heuristics": {
     "aux.H01": 2, "aux.H02": 1, "aux.H03": 3,
     "aux.H04": 2, "aux.H05": 1, "aux.H06": 2,

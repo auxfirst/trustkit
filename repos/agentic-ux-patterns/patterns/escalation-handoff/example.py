@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Escalation Handoff — minimal runnable example.
 
 A blocked situation produces a route with a context packet and the agent's

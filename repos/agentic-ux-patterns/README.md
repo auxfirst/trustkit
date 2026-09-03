@@ -44,4 +44,13 @@ See [`CONTRIBUTING.md`](../../CONTRIBUTING.md). A pattern PR is rejected if any 
 
 ## License
 
-CC BY 4.0.
+Same rule as the rest of TrustKit: **if you embed it, MIT; if you read it, CC BY 4.0.**
+
+| File | License |
+|---|---|
+| `example.py` — the thing you copy into your codebase | **MIT** (`SPDX-License-Identifier: MIT` in each file) |
+| `README.md`, `anti-pattern.md`, `diagram.svg` | **CC BY 4.0** |
+
+The examples are labelled copy-paste, so a license that sends an adopter to
+their legal team defeats the point. Attribution is still wanted — see
+[`CITATION.cff`](../../CITATION.cff) — it is just not a condition of use.

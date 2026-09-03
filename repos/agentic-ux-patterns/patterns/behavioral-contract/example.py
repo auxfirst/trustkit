@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Behavioral Contract — minimal runnable example.
 
 Golden cases assert on promised properties, never on prose. Changing the pin

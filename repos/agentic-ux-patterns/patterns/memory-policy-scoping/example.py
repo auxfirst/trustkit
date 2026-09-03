@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Memory Policy Scoping — minimal runnable example.
 
 Ancestors are readable, siblings never are, and out-of-scope hits are withheld

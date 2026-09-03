@@ -33,7 +33,11 @@ Publishing the GitHub release and tagging `v0.2` is a manual step after merge.
 
 ### Notes
 
-- `evolution_stage` is reported as `human-assessed` and is always `null`. The
-  capability axis is scored by a human in a teardown, not derived from a spec
+- `evolution_stage` is reported as `human-assessed` and is always `null` in
+  `aux-audit`. The capability axis is defined in
+  `schemas/aux-evolution-curve.yaml` (E01 Reactive → E04 Personally
+  Intelligent) and scored by a human in a teardown, not derived from a spec
   ([#5](https://github.com/auxfirst/trustkit/issues/5)).
+- Licensing follows one rule: machine-readable definitions are MIT, prose is
+  CC BY 4.0. That now covers pattern `example.py` files as well as schemas.
 - A spec with no evaluation transcripts is capped at heuristic level 2.

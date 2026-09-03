@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: MIT
 """Enforce the two claims this repo makes about itself.
 
   1. Every named gap in trust-gap-taxonomy.yaml has a pattern that closes it.

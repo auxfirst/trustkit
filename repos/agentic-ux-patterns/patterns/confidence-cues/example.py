@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: MIT
 """Confidence Cues — minimal runnable example.
 
 The band is computed from evidence, never from phrasing, and the renderer has
