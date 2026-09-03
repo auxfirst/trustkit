@@ -2,7 +2,7 @@
 
 > A CLI that scores an agent product against the AUX heuristics and Trust Architecture. Score, grade, violations — reproducible.
 
-> **Status — v0.1 implemented.** The CLI lives at **[`packages/aux-audit`](../../packages/aux-audit/)** in this repository: validator, rule set, scorer, and Markdown/JSON/SARIF output, with a GitHub Action wrapper at [`action.yml`](../../action.yml). Run it with `npx aux-audit run ./agent-spec.yaml` once v0.1 is published to npm; until then, `npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build`.
+> **Status — v0.1 implemented.** The CLI lives at **[`packages/aux-audit`](../../packages/aux-audit/)** in this repository: validator, rule set, scorer, and Markdown/JSON/SARIF output, with a GitHub Action wrapper at [`action.yml`](../../action.yml). From a clone: `npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build`. `npx aux-audit` works after the package is published to npm.
 
 ```bash
 npx aux-audit run ./agent-spec.yaml
@@ -13,7 +13,7 @@ npx aux-audit run ./agent-spec.yaml
 score: 72
 grade: B
 trust_stage: contextual
-evolution_stage: task-aware
+evolution_stage: null          # schema-undefined until the Evolution Curve ships
 issues:
   - id: aux.H01
     type: visibility_of_intent
@@ -36,7 +36,7 @@ recommendations:
 
 1. **Parses** an agent spec (JSON/YAML describing the product: surface, memory model, tool use, autonomy model, failure handling).
 2. **Runs** the rule set from [`aux-frameworks`](../aux-frameworks) against it.
-3. **Scores** on two axes — trust maturity and capability — per the Trust Architecture + Evolution Curve.
+3. **Scores** trust maturity from the Trust Architecture. Capability (`evolution_stage`) is `null` until an Evolution Curve schema is published.
 4. **Emits** a scored report as Markdown, JSON, or SARIF (for CI integration).
 
 ## Why CLI-first

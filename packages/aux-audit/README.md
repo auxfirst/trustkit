@@ -78,7 +78,7 @@ Use the Action from this repo:
     fail-on: high
 ```
 
-It writes `audit.sarif` (upload with `github/codeql-action/upload-sarif` to get findings in the Security tab), `audit-summary.md` (use as a PR comment body), and `audit.json`, and exposes `score`, `grade`, `trust-stage`, and `issue-count` as step outputs. A ready-made workflow is at [`onboarding/forwardables/A3-aux-audit.yml`](../../onboarding/forwardables/A3-aux-audit.yml).
+It writes `audit.sarif` (upload with `github/codeql-action/upload-sarif` to get findings in the Security tab), `audit-summary.md` (use as a PR comment body), and `audit.json`, and exposes `score`, `grade`, `trust-stage`, and `issue-count` as step outputs. Default `version` is `local` — the Action builds `packages/aux-audit` from this checkout, so it does not wait on `npm publish`. A ready-made workflow is at [`onboarding/forwardables/A3-aux-audit.yml`](../../onboarding/forwardables/A3-aux-audit.yml).
 
 ## As a library
 

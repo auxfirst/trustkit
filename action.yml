@@ -32,9 +32,9 @@ inputs:
     required: false
     default: "audit.json"
   version:
-    description: "Version of the aux-audit npm package to run."
+    description: "How to resolve the CLI. 'local' (default) runs packages/aux-audit from this Action checkout. A semver uses the npm package aux-audit@<version>."
     required: false
-    default: "0.1.0"
+    default: "local"
 
 outputs:
   score:
@@ -75,11 +75,21 @@ runs:
         config_args=()
         if [ -n "$AUX_CONFIG" ]; then config_args=(--config "$AUX_CONFIG"); fi
 
-        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+        # Resolve the CLI from this checkout unless a published npm version is requested.
+        # Local is the default so the Action works before `npm publish`.
+        if [ "$AUX_VERSION" = "local" ] || [ -z "$AUX_VERSION" ]; then
+          pkg="${GITHUB_ACTION_PATH}/packages/aux-audit"
+          (cd "$pkg" && npm ci && npm run build)
+          aux=(node "$pkg/dist/cli.js")
+        else
+          aux=(npx --yes "aux-audit@${AUX_VERSION}")
+        fi
+
+        "${aux[@]}" run "$AUX_SPEC" \
           "${config_args[@]}" \
           --format json --out "$AUX_JSON" --summary "$AUX_SUMMARY"
 
-        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+        "${aux[@]}" run "$AUX_SPEC" \
           "${config_args[@]}" \
           --format sarif --out "$AUX_SARIF"
 
@@ -109,6 +119,11 @@ runs:
         set -euo pipefail
         config_args=()
         if [ -n "$AUX_CONFIG" ]; then config_args=(--config "$AUX_CONFIG"); fi
-        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+        if [ "$AUX_VERSION" = "local" ] || [ -z "$AUX_VERSION" ]; then
+          aux=(node "${GITHUB_ACTION_PATH}/packages/aux-audit/dist/cli.js")
+        else
+          aux=(npx --yes "aux-audit@${AUX_VERSION}")
+        fi
+        "${aux[@]}" run "$AUX_SPEC" \
           "${config_args[@]}" \
           --format json --fail-on "$AUX_FAIL_ON" > /dev/null

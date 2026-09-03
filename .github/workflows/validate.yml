@@ -20,6 +20,7 @@ on:
       - "onboarding/**"
       - "repos/**/README.md"
       - "profile/**"
+      - "docs/**"
       - "packages/**"
       - "action.yml"
       - "*.md"

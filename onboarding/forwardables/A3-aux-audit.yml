@@ -7,8 +7,10 @@
 #   - posts a scorecard as a sticky PR comment
 #   - fails the build on any severity: high finding
 #
-# Local repro:  npx aux-audit run ./spec.yaml --fail-on high
+# Local repro:  node packages/aux-audit/dist/cli.js run ./spec.yaml --fail-on high
 # Source:       https://github.com/auxfirst/trustkit/tree/main/packages/aux-audit
+# The Action runs the CLI from the trustkit checkout (version: local).
+# Pin `version: 0.1.0` only after aux-audit is on npm.
 
 name: aux-audit
 
