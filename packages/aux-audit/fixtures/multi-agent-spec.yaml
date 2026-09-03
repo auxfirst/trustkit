@@ -1,0 +1,15 @@
+# Exercises aux.H09, which is not applicable to single-agent specs.
+name: "Research Crew"
+version: "1.0.0"
+surface: async
+autonomy: human-on-the-loop
+memory:
+  persistent: true
+  scopes: [research_notes, sources]
+  retention: P30D
+  user_visible: true
+  user_editable: false
+tools: [web.search, agent.delegate, doc.write]
+flows: [./flows/handoff.md]
+guarantees:
+  - "will always confirm before publishing a document"

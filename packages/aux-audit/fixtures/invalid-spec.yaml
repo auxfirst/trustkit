@@ -1,0 +1,6 @@
+# Missing required fields; aux-audit must refuse to grade this.
+name: "Broken"
+surface: telepathy
+memory:
+  persistent: true
+  retention: "90 days"

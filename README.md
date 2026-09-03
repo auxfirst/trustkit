@@ -1,11 +1,47 @@
-# auxfirst — agentic UX as a named discipline
+# TrustKit
+
+**auxfirst** — agentic UX as a named discipline.
 
 > Patterns, heuristics, and trust systems for AI products.
 > We don't design interfaces. We design relationships between users and agents.
 
+**Project home: [auxfirst.com](https://auxfirst.com)** · [`aux-audit`](packages/aux-audit/) · [Schemas](schemas/) · [Onboarding](onboarding/README.md) · [Docs](docs/index.md) · [Cite this work](CITATION.cff)
+
 **AUX** (Agentic User Experience) is an open standard. The 10 AUX Heuristics, the 4-stage Trust Architecture, and the Trust Gap Taxonomy are published as editable YAML schemas — forkable, citable, not vendor-locked. Definitions are **CC BY 4.0**; executable tooling is **MIT**.
 
 If you ship AI products, you are no longer designing screens. You are designing an ongoing relationship between a user and an agent that has memory, initiative, and judgment. Classical UX was built for tools. AUX is built for relationships.
+
+## Run it
+
+The standard is executable. `aux-audit` scores an agent product against the 10 heuristics and the Trust Architecture, and tells you which trust stage you have actually earned.
+
+```bash
+# from a clone of this repo
+npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build
+node packages/aux-audit/dist/cli.js run ./agent-spec.yaml
+
+# after npm publish
+npx aux-audit run ./agent-spec.yaml
+```
+
+```
+Score 41/100 · Grade F · Trust stage: functional
+
+| Stage | Earned | Blocked by |
+| 1. Functional Trust | ✅ | — |
+| 2. Contextual Trust | ❌ | aux.H08 |
+```
+
+In CI, as a GitHub Action — SARIF into the Security tab, a scorecard on the PR:
+
+```yaml
+- uses: auxfirst/trustkit@v0.2
+  with:
+    spec: ./agent-spec.yaml
+    fail-on: high
+```
+
+It grades the **spec**, not the running product: it can prove a mechanism was never declared, never that a declared one works. A spec with no evaluation transcripts is capped at *present* on every heuristic, so the score cannot be gamed with better prose. See **[packages/aux-audit](packages/aux-audit/)**.
 
 ## Start here
 
@@ -47,11 +83,14 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │
 ├── repos/                         ← first-wave repo READMEs (split out as v0.x ships)
 │   ├── aux-frameworks/            ← Definition
-│   ├── aux-audit/                 ← Executable (CLI · v0.1 contract)
+│   ├── aux-audit/                 ← Executable (spec; built in packages/aux-audit)
 │   ├── trust-gap-classifier/      ← Executable
 │   ├── agent-memory-policy/       ← Executable
 │   ├── agent-ux-teardowns/        ← Reference
 │   └── agentic-ux-patterns/       ← Reference (intent-handshake, memory-in-motion)
+│
+├── packages/aux-audit/            ← the CLI (MIT) · npx aux-audit
+├── action.yml                     ← GitHub Action wrapping the CLI
 │
 ├── visuals/storyboard.html        ← single-page visual overview
 ├── one-pager/                     ← business one-pager (Word, editable)
@@ -61,7 +100,11 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 ├── REPO_STRUCTURE.md              ← naming + layout conventions
 ├── CONTRIBUTING.md                ← contribution bar (the bar is high)
 ├── CODE_OF_CONDUCT.md             ← Contributor Covenant 2.1
-├── LICENSE                        ← CC BY 4.0
+├── docs/                          ← static-site copy (canonical path TBD)
+├── CHANGELOG.md                   ← what shipped
+├── CITATION.cff                   ← how to cite AUX definitions
+├── LICENSE                        ← CC BY 4.0 (GitHub-detectable legal code)
+├── LICENSING.md                   ← dual-license map (CC BY / MIT / CC BY-NC)
 └── .github/                       ← Issue templates, PR template, CI
 ```
 
@@ -80,11 +123,13 @@ This is the **proof layer** for the category. Every claim ships with a schema, a
 ## Read order (if you want the whole picture)
 
 1. **[onboarding/README.md](onboarding/README.md)** — the router. Pick a slice, skip the rest.
-2. **[ARCHITECTURE.md](ARCHITECTURE.md)** — how the pieces fit.
-3. **[visuals/storyboard.html](visuals/storyboard.html)** — download and open in a browser; the whole story on one page.
-4. **[repos/](repos/)** — the six first-wave repos.
-5. **[schemas/](schemas/)** — the YAML that makes this real.
-6. **[one-pager/auxfirst-github-onepager.docx](one-pager/auxfirst-github-onepager.docx)** — for business conversations.
+2. **[packages/aux-audit](packages/aux-audit/)** — the CLI. Run it against your own spec.
+3. **[docs/index.md](docs/index.md)** — the static-site copy of the same material.
+4. **[ARCHITECTURE.md](ARCHITECTURE.md)** — how the pieces fit.
+5. **[visuals/storyboard.html](visuals/storyboard.html)** — download and open in a browser; the whole story on one page.
+6. **[repos/](repos/)** — the six first-wave repos.
+7. **[schemas/](schemas/)** — the YAML that makes this real.
+8. **[one-pager/auxfirst-github-onepager.docx](one-pager/auxfirst-github-onepager.docx)** — for business conversations.
 
 ## Principles
 
@@ -98,18 +143,30 @@ This is the **proof layer** for the category. Every claim ships with a schema, a
 
 The bar is high. Patterns need diagrams, heuristics need examples, benchmarks need a runnable script. See **[CONTRIBUTING.md](CONTRIBUTING.md)** before opening a PR. Open an Issue first for anything that touches an ID or introduces vocabulary — five Issue templates are set up: `pattern-request`, `gap-proposal`, `debate`, `schema`, `bug`.
 
+## Citing AUX
+
+The definitions here are meant to be quoted, forked, and built on. If you reference the AUX
+Heuristics, the Trust Architecture, or the Trust Gap Taxonomy in a post, paper, or product doc,
+cite the repository — **[CITATION.cff](CITATION.cff)** carries the machine-readable metadata, and
+GitHub renders it behind the *Cite this repository* button as APA or BibTeX.
+
+> auxfirst (2026). *TrustKit — AUX (Agentic User Experience) heuristics, trust architecture, and
+> trust gap taxonomy* (Version 0.2). https://github.com/auxfirst/trustkit
+
 ## License
 
 - Definition content (schemas, frameworks, heuristics, vocabulary): **CC BY 4.0**.
-- Executable tooling (when shipped): **MIT**.
+- Executable tooling (`packages/aux-audit`, `action.yml`): **MIT**.
 - Teardown content: **CC BY-NC 4.0** (attribution, non-commercial).
 
-See **[LICENSE](LICENSE)** for the full text and per-repo variation.
+See **[LICENSE](LICENSE)** for the CC BY 4.0 legal code and **[LICENSING.md](LICENSING.md)** for the dual-license map (tooling is MIT).
 
 ## Status
 
-**v0.2 · 2026-04-19** — First public release. Onboarding layer live: audience-routed docs (R1–R4) + four forwardable artifacts + two canonical patterns + six first-wave repo READMEs + canonical schemas. `aux-audit` CLI (v0.1 contract) in active development. Next: pressure-test the router with a real CTO reader; ship the `aux-audit` binary.
+**v0.2 · 2026-04-19** — First public release. Onboarding layer live: audience-routed docs (R1–R4) + four forwardable artifacts + two canonical patterns + six first-wave repo READMEs + canonical schemas. `aux-audit` v0.1 is implemented, tested, and wired into CI as a GitHub Action. Next: `npm publish` so `npx aux-audit` resolves without a clone; list the Action on the Marketplace; publish a schema for the Evolution Curve, which `aux-audit` currently reports as `schema-undefined`.
 
 ---
 
-*auxfirst — agentic UX as a named discipline.*
+*TrustKit — auxfirst. Agentic UX as a named discipline.*
+
+**[auxfirst.com](https://auxfirst.com)** · [github.com/auxfirst](https://github.com/auxfirst) · questions and proposals go in [Issues](https://github.com/auxfirst/trustkit/issues).

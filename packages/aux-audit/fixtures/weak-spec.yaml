@@ -1,0 +1,12 @@
+# A spec that declares capability and almost no trust mechanism.
+name: "Inbox Autopilot"
+version: "0.9.0"
+surface: ambient
+autonomy: autonomous
+memory:
+  persistent: false
+  scopes: [session]
+  retention: PT1H
+  user_visible: false
+  user_editable: false
+tools: [email.send, calendar.write, contacts.read]

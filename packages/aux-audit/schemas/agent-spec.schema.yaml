@@ -1,0 +1,75 @@
+# Agent Spec — input format for `aux-audit`
+# Version: 0.1.0
+# A minimal, opinionated description of an agentic product.
+# Fields marked "required" will cause the audit to refuse to run if missing.
+
+version: "0.1.0"
+
+$schema:
+  name: { type: string, required: true }
+  version: { type: string, required: true }
+
+  surface:
+    type: enum
+    values: ["chat", "inline", "ambient", "async", "multi-surface"]
+    required: true
+
+  autonomy:
+    type: enum
+    values: ["human-in-the-loop", "human-on-the-loop", "autonomous"]
+    required: true
+    description: >
+      in-the-loop: every step confirmed.
+      on-the-loop: batched review, observable.
+      autonomous: acts without supervision.
+
+  memory:
+    required: true
+    fields:
+      persistent: { type: boolean, required: true }
+      scopes: { type: list, required: true, item: string }
+      retention: { type: ISO-8601-duration, required: true }
+      user_visible: { type: boolean, required: true }
+      user_editable: { type: boolean, required: true }
+
+  tools:
+    type: list
+    item: string
+    description: "tool/function names available to the agent"
+
+  flows:
+    type: list
+    item: path
+    description: "paths to markdown flow descriptions; used for heuristic scoring"
+
+  guarantees:
+    type: list
+    item: string
+    description: >
+      explicit contracts the agent makes with the user
+      (e.g. 'will always ask before sending external email').
+
+  evaluation:
+    fields:
+      golden_transcripts: { type: list, item: path }
+      failure_transcripts: { type: list, item: path }
+
+example: |
+  name: "Support Copilot v2"
+  version: "2.3.1"
+  surface: chat
+  autonomy: human-on-the-loop
+  memory:
+    persistent: true
+    scopes: [preferences, conversation_history, escalation_notes]
+    retention: P90D
+    user_visible: true
+    user_editable: true
+  tools: [crm.lookup, email.send, ticket.create]
+  flows: [./flows/handoff.md, ./flows/refund.md]
+  guarantees:
+    - "will always ask before sending external email"
+    - "will always hand off to a human after two failed resolutions"
+  evaluation:
+    golden_transcripts: [./transcripts/golden/*.jsonl]
+    failure_transcripts: [./transcripts/failures/*.jsonl]

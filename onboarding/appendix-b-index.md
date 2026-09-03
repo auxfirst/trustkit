@@ -20,7 +20,8 @@ Where to go next, grouped by intent.
 ## If you want to ship the tools
 
 - [**repos/aux-frameworks/**](../repos/aux-frameworks/README.md) — definition repo.
-- [**repos/aux-audit/**](../repos/aux-audit/README.md) — CLI.
+- [**packages/aux-audit/**](../packages/aux-audit/README.md) — CLI (implemented).
+- [**repos/aux-audit/**](../repos/aux-audit/README.md) — CLI contract / future split repo.
 - [**repos/trust-gap-classifier/**](../repos/trust-gap-classifier/README.md) — scanner + taxonomy.
 - [**repos/agent-memory-policy/**](../repos/agent-memory-policy/README.md) — policy generator.
 - [**repos/agent-ux-teardowns/**](../repos/agent-ux-teardowns/README.md) — structured teardowns.

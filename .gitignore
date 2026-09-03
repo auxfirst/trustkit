@@ -16,3 +16,7 @@ internal/
 node_modules/
 .cache/
 *.log
+
+# aux-audit build output
+packages/aux-audit/dist/
+packages/aux-audit/.build-test/
