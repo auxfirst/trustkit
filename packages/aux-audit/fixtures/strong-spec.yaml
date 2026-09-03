@@ -1,0 +1,27 @@
+# A spec that declares real mechanisms for most heuristics.
+name: "Support Copilot v2"
+version: "2.3.1"
+surface: chat
+autonomy: human-on-the-loop
+memory:
+  persistent: true
+  scopes: [preferences, conversation_history, escalation_notes]
+  retention: P90D
+  user_visible: true
+  user_editable: true
+tools: [crm.lookup, email.send, ticket.create]
+flows:
+  - ./flows/onboarding.md
+  - ./flows/handoff.md
+  - ./flows/refund.md
+guarantees:
+  - "will always ask before sending external email"
+  - "will always hand off to a human after two failed resolutions"
+  - "will never act on an ambiguous refund request without confirmation"
+  - "the user can cancel any in-flight action for 10 seconds after it starts"
+  - "autonomy expands with tenure: the first five sessions are fully gated"
+  - "will flag low confidence and cite the source article for every policy answer"
+  - "responses are pinned to a model version; drift is announced in the changelog"
+evaluation:
+  golden_transcripts: [./transcripts/golden/refund.jsonl]
+  failure_transcripts: [./transcripts/failures/ambiguous-refund.jsonl]

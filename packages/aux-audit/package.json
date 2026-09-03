@@ -1,0 +1,58 @@
+{
+  "name": "aux-audit",
+  "version": "0.1.0",
+  "description": "Score an agent product against the 10 AUX Heuristics and the Trust Architecture. Reproducible, CI-friendly, SARIF-capable.",
+  "keywords": [
+    "aux",
+    "agentic-user-experience",
+    "ai-agents",
+    "audit",
+    "heuristics",
+    "trust",
+    "sarif"
+  ],
+  "homepage": "https://auxfirst.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/auxfirst/trustkit.git",
+    "directory": "packages/aux-audit"
+  },
+  "bugs": "https://github.com/auxfirst/trustkit/issues",
+  "license": "MIT",
+  "author": "auxfirst (https://auxfirst.com)",
+  "type": "module",
+  "bin": {
+    "aux-audit": "dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "schemas",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "sync:schemas": "node scripts/sync-schemas.mjs",
+    "check:schemas": "node scripts/sync-schemas.mjs --check",
+    "build": "npm run sync:schemas && tsc -p tsconfig.json",
+    "test": "npm run build && tsc -p tsconfig.test.json && node --test .build-test/test/*.test.js",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "typescript": "^5.7.0"
+  }
+}

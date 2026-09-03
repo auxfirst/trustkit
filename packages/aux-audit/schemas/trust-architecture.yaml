@@ -1,0 +1,54 @@
+# Trust Architecture — 4-stage maturity ladder
+# Version: 0.1.0
+# License: CC BY 4.0
+
+version: "0.1.0"
+name: "Trust Architecture"
+source: "auxfirst"
+
+principle: >
+  Trust is built sequentially — functional first, advocacy last.
+  Trust loss does NOT cascade gracefully: a single advocacy violation
+  can collapse trust all the way back to functional.
+
+stages:
+  - id: aux.T01
+    order: 1
+    name: "Functional Trust"
+    question: "Can it complete basic tasks reliably and predictably?"
+    earned_when:
+      - "same input → same output, across sessions"
+      - "degradation is announced, not silent"
+    failure_modes: ["hallucination", "silent_degradation", "inconsistent_output"]
+
+  - id: aux.T02
+    order: 2
+    name: "Contextual Trust"
+    question: "Does it understand nuance, preferences, and history?"
+    earned_when:
+      - "stated preferences persist across sessions"
+      - "vocabulary adapts to the user"
+    failure_modes: ["memory_amnesia", "preference_ignored", "context_leak"]
+
+  - id: aux.T03
+    order: 3
+    name: "Judgment Trust"
+    question: "Can it make good calls in ambiguous, novel situations?"
+    earned_when:
+      - "recommendations in unscripted situations align with user intent"
+      - "escalates when escalation is the right call"
+    failure_modes: ["overreach_in_ambiguity", "confident_nonsense", "refusal_when_escalation_needed"]
+
+  - id: aux.T04
+    order: 4
+    name: "Advocacy Trust"
+    question: "Will it act in my best interest even when incentives misalign?"
+    earned_when:
+      - "surfaces user-optimal recommendation even when platform-suboptimal"
+      - "loyalty is visible and defensible"
+    failure_modes: ["metric_over_user", "incentive_misalignment", "loyalty_leak"]
+
+dynamics:
+  new_user: "gated / cautious — the default starting state"
+  experienced_user: "autonomous / fast — earned through successful interactions"
+  after_violation: "snap back toward gated — proportional to severity"

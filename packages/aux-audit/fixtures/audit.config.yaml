@@ -1,0 +1,6 @@
+# Example audit.config.yaml
+fail_on: high
+ignore:
+  - aux.H09          # single-agent product; multi-agent clarity does not apply
+severity_overrides:
+  aux.H04: medium    # trust laddering is on the roadmap, not a blocker yet

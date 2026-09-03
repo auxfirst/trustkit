@@ -1,0 +1,114 @@
+name: "AUX Audit"
+description: "Score an agent product against the 10 AUX Heuristics and the Trust Architecture. Emits SARIF and a PR scorecard."
+author: "auxfirst"
+
+branding:
+  icon: "shield"
+  color: "purple"
+
+inputs:
+  spec:
+    description: "Path to the agent spec (YAML or JSON)."
+    required: true
+    default: "agent-spec.yaml"
+  config:
+    description: "Path to audit.config.yaml. Optional."
+    required: false
+    default: ""
+  fail-on:
+    description: "Fail the build on findings at or above this severity: low, medium, high, critical. Empty never fails."
+    required: false
+    default: "high"
+  sarif-file:
+    description: "Where to write the SARIF report."
+    required: false
+    default: "audit.sarif"
+  summary-file:
+    description: "Where to write the Markdown scorecard (use as a PR comment body)."
+    required: false
+    default: "audit-summary.md"
+  json-file:
+    description: "Where to write the full JSON report."
+    required: false
+    default: "audit.json"
+  version:
+    description: "Version of the aux-audit npm package to run."
+    required: false
+    default: "0.1.0"
+
+outputs:
+  score:
+    description: "Score out of 100."
+    value: ${{ steps.audit.outputs.score }}
+  grade:
+    description: "Letter grade A-F."
+    value: ${{ steps.audit.outputs.grade }}
+  trust-stage:
+    description: "Highest trust stage earned, or empty if none."
+    value: ${{ steps.audit.outputs.trust-stage }}
+  issue-count:
+    description: "Number of issues found."
+    value: ${{ steps.audit.outputs.issue-count }}
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    # Report first, gate second: the SARIF and the scorecard must exist even when
+    # the audit is about to fail the build, or reviewers see a red X and no reason.
+    - name: Run aux-audit (report)
+      id: audit
+      shell: bash
+      env:
+        AUX_SPEC: ${{ inputs.spec }}
+        AUX_CONFIG: ${{ inputs.config }}
+        AUX_VERSION: ${{ inputs.version }}
+        AUX_JSON: ${{ inputs.json-file }}
+        AUX_SUMMARY: ${{ inputs.summary-file }}
+        AUX_SARIF: ${{ inputs.sarif-file }}
+      run: |
+        set -euo pipefail
+        config_args=()
+        if [ -n "$AUX_CONFIG" ]; then config_args=(--config "$AUX_CONFIG"); fi
+
+        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+          "${config_args[@]}" \
+          --format json --out "$AUX_JSON" --summary "$AUX_SUMMARY"
+
+        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+          "${config_args[@]}" \
+          --format sarif --out "$AUX_SARIF"
+
+        node -e '
+          const report = require("fs").readFileSync(process.env.AUX_JSON, "utf8");
+          const { score, grade, trust_stage, issues } = JSON.parse(report);
+          const out = process.env.GITHUB_OUTPUT;
+          require("fs").appendFileSync(out,
+            `score=${score}\ngrade=${grade}\ntrust-stage=${trust_stage ?? ""}\nissue-count=${issues.length}\n`);
+        '
+
+    - name: Job summary
+      shell: bash
+      env:
+        AUX_SUMMARY: ${{ inputs.summary-file }}
+      run: cat "$AUX_SUMMARY" >> "$GITHUB_STEP_SUMMARY"
+
+    - name: Gate on severity
+      if: inputs.fail-on != ''
+      shell: bash
+      env:
+        AUX_SPEC: ${{ inputs.spec }}
+        AUX_CONFIG: ${{ inputs.config }}
+        AUX_VERSION: ${{ inputs.version }}
+        AUX_FAIL_ON: ${{ inputs.fail-on }}
+      run: |
+        set -euo pipefail
+        config_args=()
+        if [ -n "$AUX_CONFIG" ]; then config_args=(--config "$AUX_CONFIG"); fi
+        npx --yes "aux-audit@${AUX_VERSION}" run "$AUX_SPEC" \
+          "${config_args[@]}" \
+          --format json --fail-on "$AUX_FAIL_ON" > /dev/null

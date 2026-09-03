@@ -1,18 +1,14 @@
 # .github/workflows/aux-audit.yml
 # Drop this into your repo. Point at your spec. Ship.
 #
-# STATUS — aux-audit v0.1 CLI in active development. This workflow describes the
-# v0.1 contract; it will fail with "package not found" until the CLI ships to npm.
-# Adopt the spec format and stage this workflow now; it becomes live the day v0.1 ships.
-# Follow: https://github.com/auxfirst/aux-audit
+# Scores your agent product against the 10 AUX Heuristics on every PR that
+# touches the spec, the flows, or the golden transcripts:
+#   - uploads SARIF, so findings land in the Security tab and on the diff
+#   - posts a scorecard as a sticky PR comment
+#   - fails the build on any severity: high finding
 #
-# What it does (once v0.1 ships):
-#   - Runs aux-audit on every PR that touches the spec, flows, or golden transcripts.
-#   - Emits SARIF, uploaded as code-scanning findings.
-#   - Fails the build on any severity: high violation.
-# Local repro (once v0.1 ships): npx aux-audit run ./spec.yaml --fail-on high
-#
-# Source: https://github.com/auxfirst/aux-audit
+# Local repro:  npx aux-audit run ./spec.yaml --fail-on high
+# Source:       https://github.com/auxfirst/trustkit/tree/main/packages/aux-audit
 
 name: aux-audit
 
@@ -28,7 +24,7 @@ on:
 permissions:
   contents: read
   security-events: write   # required to upload SARIF
-  pull-requests: write
+  pull-requests: write     # required to comment the scorecard
 
 jobs:
   audit:
@@ -37,18 +33,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-
       - name: Run aux-audit
-        run: |
-          npx aux-audit run ./spec.yaml \
-            --config ./audit.config.yaml \
-            --format sarif \
-            --out audit.sarif \
-            --fail-on high
+        id: aux
+        uses: auxfirst/trustkit@v0.2
+        with:
+          spec: ./spec.yaml
+          config: ./audit.config.yaml
+          fail-on: high
 
       - name: Upload SARIF
         if: always()

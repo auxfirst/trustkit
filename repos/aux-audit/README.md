@@ -2,11 +2,10 @@
 
 > A CLI that scores an agent product against the AUX heuristics and Trust Architecture. Score, grade, violations — reproducible.
 
-> **Status — v0.1 spec · not yet on npm.** This repo is the specification, the rule set, and the intended CLI contract. The runnable binary is in active development — follow this repo or open an issue to be notified when `npx aux-audit` ships. All commands below describe the v0.1 contract.
+> **Status — v0.1 implemented.** The CLI lives at **[`packages/aux-audit`](../../packages/aux-audit/)** in this repository: validator, rule set, scorer, and Markdown/JSON/SARIF output, with a GitHub Action wrapper at [`action.yml`](../../action.yml). Run it with `npx aux-audit run ./agent-spec.yaml` once v0.1 is published to npm; until then, `npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit run build`.
 
 ```bash
-# v0.1 contract (CLI in development):
-npx aux-audit run ./agent-spec.json
+npx aux-audit run ./agent-spec.yaml
 ```
 
 ```yaml

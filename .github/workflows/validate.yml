@@ -4,10 +4,12 @@
 # schemas, or workflows. Catches the load-bearing failures cheaply:
 #   - YAML syntax errors in /schemas/
 #   - broken internal links across onboarding/forwardables/repos
+#   - aux-audit failing its own test suite, or drifting from the canonical schemas
 #
 # Local repro:
 #   yamllint schemas/ .github/
 #   lychee --offline --no-progress --include-fragments '**/*.md'
+#   npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit test
 
 name: validate
 
@@ -18,6 +20,8 @@ on:
       - "onboarding/**"
       - "repos/**/README.md"
       - "profile/**"
+      - "packages/**"
+      - "action.yml"
       - "*.md"
       - ".github/workflows/**"
   push:
@@ -62,3 +66,45 @@ jobs:
             --exclude '^https?://'
             './**/*.md'
           fail: true
+
+  aux-audit:
+    name: aux-audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: packages/aux-audit/package-lock.json
+
+      - name: Install
+        working-directory: packages/aux-audit
+        run: npm ci
+
+      # The package ships a copy of schemas/ so the npm tarball is self-contained.
+      # If the copy drifts from the canonical definitions, the published tool
+      # would grade against a stale standard — so fail loudly instead.
+      - name: Check bundled schemas match schemas/
+        working-directory: packages/aux-audit
+        run: npm run check:schemas
+
+      - name: Test
+        working-directory: packages/aux-audit
+        run: npm test
+
+      - name: Smoke-test the CLI contract
+        working-directory: packages/aux-audit
+        run: |
+          set -euo pipefail
+          node dist/cli.js run fixtures/strong-spec.yaml --fail-on critical > /dev/null
+          node dist/cli.js run fixtures/weak-spec.yaml --format sarif --out /tmp/audit.sarif || true
+          node -e "
+            const s = JSON.parse(require('fs').readFileSync('/tmp/audit.sarif', 'utf8'));
+            if (s.version !== '2.1.0') throw new Error('bad SARIF version');
+            if (s.runs[0].results.length === 0) throw new Error('expected findings');
+          "
+          if node dist/cli.js run fixtures/invalid-spec.yaml > /dev/null 2>&1; then
+            echo "expected an invalid spec to be refused"; exit 1
+          fi
