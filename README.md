@@ -3,6 +3,8 @@
 > Patterns, heuristics, and trust systems for AI products.
 > We don't design interfaces. We design relationships between users and agents.
 
+**Project home: [auxfirst.com](https://auxfirst.com)** · [Schemas](schemas/) · [Onboarding](onboarding/README.md) · [Cite this work](CITATION.cff)
+
 **AUX** (Agentic User Experience) is an open standard. The 10 AUX Heuristics, the 4-stage Trust Architecture, and the Trust Gap Taxonomy are published as editable YAML schemas — forkable, citable, not vendor-locked. Definitions are **CC BY 4.0**; executable tooling is **MIT**.
 
 If you ship AI products, you are no longer designing screens. You are designing an ongoing relationship between a user and an agent that has memory, initiative, and judgment. Classical UX was built for tools. AUX is built for relationships.
@@ -61,6 +63,7 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 ├── REPO_STRUCTURE.md              ← naming + layout conventions
 ├── CONTRIBUTING.md                ← contribution bar (the bar is high)
 ├── CODE_OF_CONDUCT.md             ← Contributor Covenant 2.1
+├── CITATION.cff                   ← how to cite AUX definitions
 ├── LICENSE                        ← CC BY 4.0
 └── .github/                       ← Issue templates, PR template, CI
 ```
@@ -98,6 +101,16 @@ This is the **proof layer** for the category. Every claim ships with a schema, a
 
 The bar is high. Patterns need diagrams, heuristics need examples, benchmarks need a runnable script. See **[CONTRIBUTING.md](CONTRIBUTING.md)** before opening a PR. Open an Issue first for anything that touches an ID or introduces vocabulary — five Issue templates are set up: `pattern-request`, `gap-proposal`, `debate`, `schema`, `bug`.
 
+## Citing AUX
+
+The definitions here are meant to be quoted, forked, and built on. If you reference the AUX
+Heuristics, the Trust Architecture, or the Trust Gap Taxonomy in a post, paper, or product doc,
+cite the repository — **[CITATION.cff](CITATION.cff)** carries the machine-readable metadata, and
+GitHub renders it behind the *Cite this repository* button as APA or BibTeX.
+
+> auxfirst (2026). *TrustKit — AUX (Agentic User Experience) heuristics, trust architecture, and
+> trust gap taxonomy* (Version 0.2). https://github.com/auxfirst/trustkit
+
 ## License
 
 - Definition content (schemas, frameworks, heuristics, vocabulary): **CC BY 4.0**.
@@ -113,3 +126,5 @@ See **[LICENSE](LICENSE)** for the full text and per-repo variation.
 ---
 
 *auxfirst — agentic UX as a named discipline.*
+
+**[auxfirst.com](https://auxfirst.com)** · [github.com/auxfirst](https://github.com/auxfirst) · questions and proposals go in [Issues](https://github.com/auxfirst/trustkit/issues).
