@@ -52,3 +52,104 @@ dynamics:
   new_user: "gated / cautious — the default starting state"
   experienced_user: "autonomous / fast — earned through successful interactions"
   after_violation: "snap back toward gated — proportional to severity"
+
+# ---------------------------------------------------------------------------
+# Autonomy, budget, and enforcement.
+#
+# The stages above answer "how much has this agent earned?". These answer
+# "how much may it therefore do?" — a different question, and the one teams
+# get wrong. aux-audit reads `stages`; it does not read this block.
+# ---------------------------------------------------------------------------
+
+core_principle: Autonomy is not a slider you push to the right. It is a spectrum you choose
+  per action, calibrated to evidence and stakes. The right level of agency at the wrong
+  stakes is still a violation.
+
+stage_rules:
+  sequential: An agent earns autonomy by proving trust sequentially. A stage cannot be skipped,
+    and a claim to a higher stage without evidence at the lower ones is an assumption, not
+    an achievement.
+  collapse: Trust loss is not graceful. A single violation at the top stage collapses the
+    relationship all the way back to functional.
+
+trust_budget:
+  earned_zone_approx_pct: 40
+  description: The first ~40% of granted autonomy — what the agent has visibly earned —
+    is where users still steer. Past that line, every action draws on trust the agent has
+    not demonstrated.
+  hidden_spend:
+    note: The budget shrinks before the conversation starts. These spend autonomy nobody
+      explicitly authorized.
+    sources:
+      - model picks an action class by default
+      - system prompt grants tool access
+      - an upsell or ranking layer biases output
+  rule: Stay in the earned zone. Offload risky decisions to deterministic policy. Escalate
+    when stakes exceed proof. Reserve the assumed zone for emergencies, never for default
+    behavior.
+  two_questions:
+    - What has the agent demonstrably earned?
+    - What is it currently assuming?
+
+autonomy_levels:
+  - id: L1
+    name: Observe
+    description: Read, summarize, classify, retrieve. No state change.
+    state_change: false
+  - id: L2
+    name: Recommend
+    description: Suggest options and next steps. The user chooses.
+    state_change: false
+  - id: L3
+    name: Draft
+    description: Prepare work for human approval before action.
+    state_change: staged
+  - id: L4
+    name: Execute (gated)
+    description: Acts within a defined policy envelope. Bounded.
+    state_change: true
+    requires_policy_envelope: true
+  - id: L5
+    name: Autonomous
+    description: Pursues goals with minimal per-action review.
+    state_change: true
+    requires_policy_envelope: true
+    rare: true
+    warning: L5 is rare and should stay rare. Most systems described as L5 are L4 with an
+      undocumented envelope.
+
+consequence_cap:
+  reference: https://auxfirst.com/action-heat-ladder.html
+  rule: An action is as hot as its hottest dimension. No averaging. The resulting heat band
+    caps the maximum autonomy level the action may be granted, regardless of what trust
+    stage the agent has reached overall.
+  dimensions:
+    - reversibility
+    - blast_radius
+    - exposure
+    - commitment
+    - authority
+  scoring: 0-4 per dimension, band set by the single highest score
+  bands:
+    LOW:
+      posture: Auto-run. Log everything.
+      max_autonomy: L5
+    LOW_MEDIUM:
+      posture: Auto-run, sampled review.
+      max_autonomy: L4
+    MEDIUM:
+      posture: Propose, then batch-approve.
+      max_autonomy: L3
+    HIGH:
+      posture: Named approver, per instance.
+      max_autonomy: L3
+    CRITICAL:
+      posture: Human executes. Agent prepares.
+      max_autonomy: L2
+
+enforcement:
+  rule: Enforcement lives in a mechanism, not in a prompt. A prompt saying "only update
+    qualification information" is not the same as a tool that exposes only the qualification
+    field. The first is a request; the second is a boundary.
+  corollary: A recommendation is not a control. Where a behavior is something the system
+    does, it counts. Where it is something a builder should do, it does not.

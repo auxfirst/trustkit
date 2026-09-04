@@ -1,0 +1,190 @@
+# Brain Spec — input format for an Agency Brain
+# Version: 0.1.0
+# License: MIT (see schemas/LICENSE)
+#
+# JSON Schema draft 2020-12. Note this differs in style from
+# agent-spec.schema.yaml, which uses a bespoke descriptive format and is what
+# aux-audit validates against. Converging the two is tracked separately.
+#
+# Not read by aux-audit.
+
+# Brain Spec — JSON Schema (expressed in YAML)
+#
+# A "brain" is a bounded reasoning unit an organization can name, own, and
+# route work to — narrower than an agent, and deliberately so. An agent has
+# memory, initiative and judgment; a brain has a reasoning type, sources it may
+# read, and a contract for what it returns.
+#
+# The brand brain is the usual warm-up: deterministic, rule-based, citable.
+# The first manifest sets the precedent for the ones that follow.
+#
+# Canonical prose: https://auxfirst.com/ad-industry/agency-brains-design-02.html
+# Definitions: CC BY 4.0 · Schema: MIT · auxfirst agency 2026
+
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://auxfirst.com/schemas/brain-spec.schema.yaml
+title: Brain Spec
+description: >-
+  A single reasoning unit's manifest. Five required fields: reasoning type,
+  knowledge sources, output contract, trust signature, router tags.
+type: object
+additionalProperties: false
+
+required:
+  - spec_version
+  - id
+  - name
+  - owner
+  - reasoning_type
+  - knowledge_sources
+  - output_contract
+  - trust_signature
+  - router_tags
+
+properties:
+
+  spec_version:
+    type: string
+    const: "1.0"
+
+  id:
+    type: string
+    pattern: "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+
+  name:
+    type: string
+
+  description:
+    type: string
+
+  owner:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: A person, not a team. The owner drafts the manifest.
+      role: { type: string }
+      contact: { type: string }
+
+  # --- field 1 ------------------------------------------------------------
+  reasoning_type:
+    type: string
+    enum: [deterministic, rule_based, retrieval_augmented, probabilistic, generative]
+    description: >-
+      How the brain arrives at an answer. Deterministic and rule_based are
+      auditable by inspection; the rest are auditable only by evaluation.
+
+  # --- field 2 ------------------------------------------------------------
+  knowledge_sources:
+    type: array
+    minItems: 1
+    description: >-
+      What the brain may read. A source not listed here is a source the brain
+      may not consult, and that is enforced at the retrieval layer rather than
+      in the prompt.
+    items:
+      type: object
+      additionalProperties: false
+      required: [name, authority]
+      properties:
+        name: { type: string }
+        uri: { type: string }
+        authority:
+          type: string
+          enum: [canonical, secondary, advisory]
+          description: >-
+            canonical wins conflicts. Exactly one canonical source per topic,
+            or conflicts resolve by accident.
+        freshness_days:
+          type: integer
+          minimum: 0
+          description: Beyond this age the source is stale and must not be cited silently.
+
+  # --- field 3 ------------------------------------------------------------
+  output_contract:
+    type: object
+    additionalProperties: false
+    required: [shape, must_cite, on_insufficient_grounding]
+    description: What the caller is entitled to receive, and what it must not receive.
+    properties:
+      shape:
+        type: string
+        enum: [text, structured, classification, ranked_list, decision]
+      schema_ref:
+        type: string
+        description: For shape=structured, the schema the payload conforms to.
+      must_cite:
+        type: boolean
+        description: >-
+          Whether every claim carries a source from knowledge_sources. A brain
+          that may not cite is a brain that may not be quoted.
+      on_insufficient_grounding:
+        type: string
+        enum: [refuse, partial_with_disclosure, escalate]
+        description: >-
+          Never "answer anyway". This field is where
+          tg.judgment.confident_nonsense is prevented or invited.
+      max_confidence_without_canonical:
+        type: number
+        minimum: 0
+        maximum: 1
+
+  # --- field 4 ------------------------------------------------------------
+  trust_signature:
+    type: object
+    additionalProperties: false
+    required: [stage, autonomy_level, reviewed_by, reviewed_at]
+    description: >-
+      What this brain has earned, who says so, and when they last checked.
+      An unsigned brain does not go in the router.
+    properties:
+      stage:
+        type: string
+        enum: [T01, T02, T03, T04]
+        description: Trust stage per trust-architecture.yaml. Earned, not aspired to.
+      autonomy_level:
+        type: string
+        enum: [L1, L2, L3, L4, L5]
+      reviewed_by:
+        type: string
+        description: A named human.
+      reviewed_at:
+        type: string
+        format: date
+      expires_at:
+        type: string
+        format: date
+        description: >-
+          A signature without an expiry becomes a claim nobody rechecks.
+      known_gaps:
+        type: array
+        description: Gap ids from trust-gap-taxonomy.yaml, recorded rather than hidden.
+        items:
+          type: string
+          pattern: "^tg\\.(functional|contextual|judgment|advocacy)\\.[a-z_]+$"
+
+  # --- field 5 ------------------------------------------------------------
+  router_tags:
+    type: array
+    minItems: 1
+    description: >-
+      How work reaches this brain. Tags are the routing contract; overlapping
+      tags across brains need a documented precedence or the router picks by
+      accident.
+    items:
+      type: string
+      pattern: "^[a-z0-9][a-z0-9._-]*$"
+
+  precedence:
+    type: integer
+    description: Higher wins when router_tags overlap with another brain.
+
+  escalates_to:
+    type: string
+    description: The brain or named human that receives work this one refuses.
+
+  status:
+    type: string
+    enum: [draft, review, live, retired]

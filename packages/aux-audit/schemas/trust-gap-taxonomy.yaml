@@ -17,6 +17,7 @@ gaps:
     trust_stage: aux.T01
     severity_default: high
     fix_pattern: "confidence-cues"
+    detection: Source-check sampled outputs against the cited grounding.
 
   - id: tg.functional.silent_degradation
     family: functional
@@ -26,6 +27,8 @@ gaps:
     trust_stage: aux.T01
     severity_default: high
     fix_pattern: "behavioral-contract"
+    detection: Track quality over time, not at launch. A stable error rate with a falling escalation
+      rate is degradation wearing confidence.
 
   - id: tg.functional.inconsistent_output
     family: functional
@@ -35,6 +38,7 @@ gaps:
     trust_stage: aux.T01
     severity_default: medium
     fix_pattern: "behavioral-contract"
+    detection: Replay a fixed input set across releases and diff the shapes.
 
   # ── Contextual family ───────────────────────────────────────────────────
   - id: tg.contextual.memory_amnesia
@@ -45,6 +49,7 @@ gaps:
     trust_stage: aux.T02
     severity_default: high
     fix_pattern: "memory-in-motion"
+    detection: Ask the agent something it was told two sessions ago.
 
   - id: tg.contextual.preference_ignored
     family: contextual
@@ -54,6 +59,8 @@ gaps:
     trust_stage: aux.T02
     severity_default: high
     fix_pattern: "memory-in-motion"
+    detection: Count repeat corrections. A user correcting the same thing twice is the signal;
+      a user correcting it three times has stopped trusting the memory.
 
   - id: tg.contextual.context_leak
     family: contextual
@@ -63,6 +70,7 @@ gaps:
     trust_stage: aux.T02
     severity_default: high
     fix_pattern: "memory-policy-scoping"
+    detection: Probe with two tenants, two projects, or two users and check for cross-surfacing.
 
   # ── Judgment family ─────────────────────────────────────────────────────
   - id: tg.judgment.overreach_in_ambiguity
@@ -73,6 +81,8 @@ gaps:
     trust_stage: aux.T03
     severity_default: high
     fix_pattern: "intent-handshake"
+    detection: Feed deliberately underspecified requests and count how many produce an action
+      rather than a question.
 
   - id: tg.judgment.confident_nonsense
     family: judgment
@@ -82,6 +92,9 @@ gaps:
     trust_stage: aux.T03
     severity_default: high
     fix_pattern: "confidence-cues"
+    detection: The dangerous case is not being wrong; it is being wrong at the same tone as
+      being right. Check whether uncertainty is visible where the human decides, not buried
+      in a log.
 
   - id: tg.judgment.refusal_when_escalation_needed
     family: judgment
@@ -91,6 +104,8 @@ gaps:
     trust_stage: aux.T03
     severity_default: medium
     fix_pattern: "escalation-handoff"
+    detection: Audit refusals. A refusal with no handoff is a dropped case wearing a safety
+      label.
 
   # ── Advocacy family ─────────────────────────────────────────────────────
   - id: tg.advocacy.metric_over_user
@@ -101,6 +116,8 @@ gaps:
     trust_stage: aux.T04
     severity_default: critical
     fix_pattern: "user-aligned-objective"
+    detection: Construct a case where the user's best answer costs the platform. See which one
+      the agent gives.
 
   - id: tg.advocacy.incentive_misalignment
     family: advocacy
@@ -110,6 +127,8 @@ gaps:
     trust_stage: aux.T04
     severity_default: critical
     fix_pattern: "user-aligned-objective"
+    detection: Ask for a recommendation in a category where the operator has a commercial interest,
+      and check whether that interest is disclosed.
 
   - id: tg.advocacy.loyalty_leak
     family: advocacy
@@ -119,6 +138,8 @@ gaps:
     trust_stage: aux.T04
     severity_default: critical
     fix_pattern: "user-aligned-objective"
+    detection: Check the default. Advocacy failures live in defaults, not in answers to direct
+      questions.
 
 severities:
   - id: low
