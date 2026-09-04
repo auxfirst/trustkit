@@ -80,6 +80,7 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │   ├── aux-evolution-curve.yaml   ← the 4 capability stages (teardowns only)
 │   ├── trust-contract.yaml        ← example Trust Contract
 │   ├── agent-spec.schema.yaml     ← audit input format
+│   ├── brain-spec.schema.yaml     ← Agency Brain input format (JSON Schema)
 │   └── memory-policy.schema.yaml  ← memory governance format
 │
 ├── repos/                         ← first-wave repo READMEs (split out as v0.x ships)

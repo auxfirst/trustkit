@@ -13,60 +13,98 @@ heuristics:
     question: "Is the agent's intent legible before or during action?"
     failure_mode: "silent or opaque execution — user sees effects, not intent"
     fix_pattern: "intent-handshake"
+    test: 'A user should always be able to answer: what is this agent trying to do right now,
+      and what is it about to do next.'
+    mechanisms:
+      - intent playback
+      - plan preview
+      - pre-action statement
 
   - id: aux.H02
     name: "Progressive Transparency"
     question: "Can the user zoom in on reasoning, tool calls, and evidence?"
     failure_mode: "either a black box or a firehose"
     fix_pattern: "progressive-disclosure"
+    test: Over-explain in week one. Barely explain in month six. Like a human colleague.
+    trajectory:
+      - transparency
+      - summary
+      - confident
+      - silent
 
   - id: aux.H03
     name: "User Control Through Steering"
     question: "Can the user correct, redirect, or undo mid-flight?"
     failure_mode: "commit-only execution with no graceful intervention"
     fix_pattern: "steering-affordance"
+    test: Users should be able to point the agent at a goal and course-correct, not click through
+      every step.
+    note: UX was about control. AUX is about steering.
+    high_failure_frequency: true
 
   - id: aux.H04
     name: "Trust Is Dynamic"
     question: "Does granted autonomy change with tenure, stakes, and outcomes?"
     failure_mode: "new-user and expert-user flows are identical"
     fix_pattern: "trust-ladder-gating"
+    test: New users get cautious, gated behavior. Experienced users get faster, more autonomous
+      behavior. Trust is a curve, not a switch.
 
   - id: aux.H05
     name: "Clear Boundaries of Autonomy"
     question: "Is it obvious what the agent will and will not do without asking?"
     failure_mode: "user cannot predict when confirmation is required"
     fix_pattern: "autonomy-boundary-label"
+    test: The autonomy spectrum should be visible, not buried in settings.
+    note: Ambiguity here is where trust collapses.
+    high_failure_frequency: true
 
   - id: aux.H06
     name: "Graceful Uncertainty"
     question: "Does the agent communicate confidence honestly?"
     failure_mode: "uniform confidence regardless of actual certainty"
     fix_pattern: "confidence-cues"
+    test: Failure is a first-class design surface, not an exception path. The agent that says
+      "I don't have the grounding for that" is more trustworthy than one that confidently invents.
+    high_failure_frequency: true
 
   - id: aux.H07
     name: "Appropriate Agent Assertiveness"
     question: "Does the agent push back, escalate, or stay quiet when it should?"
     failure_mode: "constant deference, or constant overreach"
     fix_pattern: "calibrated-assertiveness"
+    test: Mature agents push back when something seems wrong. The agent that just complies is
+      not a collaborator — it is a yes-machine, and that is a future failure mode.
+    spectrum:
+      - compliant
+      - advisory
+      - assertive
+      - protective
 
   - id: aux.H08
     name: "Context Efficiency"
     question: "Does the agent use prior context instead of re-asking?"
     failure_mode: "amnesia within a session or across sessions"
     fix_pattern: "memory-in-motion"
+    test: Routing, indexing and summarization beat full scans. An agent that drowns in irrelevant
+      context reasons worse, not better.
+    note: Context is both a cost (tokens, latency, cognitive load) and a performance constraint.
 
   - id: aux.H09
     name: "Multi-Agent Clarity"
     question: "When multiple agents are present, is responsibility obvious?"
     failure_mode: "users cannot tell which agent did what"
     fix_pattern: "agent-attribution"
+    test: Every action should be attributable to a named actor with a named role.
+    note: Multi-agent systems collapse fast without this.
 
   - id: aux.H10
     name: "Consistency of Behavior"
     question: "Does the agent behave the same way for the same input, over time?"
     failure_mode: "silent drift between sessions or model versions"
     fix_pattern: "behavioral-contract"
+    test: Classic consistency is the same buttons in the same places. AUX consistency is the
+      same judgment in the same situations, regardless of how the surface renders.
 
 scoring:
   scale: [0, 1, 2, 3]
