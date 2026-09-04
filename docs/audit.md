@@ -16,7 +16,7 @@ npx aux-audit run ./agent-spec.yaml
 
 ## Contract
 
-- **Input:** an agent spec matching [`schemas/agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml).
+- **Input:** an agent spec matching [`schemas/agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml) — v0.1.0, superseded; see [#10](https://github.com/auxfirst/trustkit/issues/10).
 - **Output:** `score`, `grade`, `trust_stage`, `issues[]`, `recommendations[]`.
 - **Formats:** Markdown (default), JSON, SARIF 2.1.0.
 - **Exit codes:** `0` clean · `1` findings at or above `--fail-on` · `2` invalid spec (nothing graded).
