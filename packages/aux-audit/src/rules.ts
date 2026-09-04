@@ -101,10 +101,12 @@ export const RULES: Rule[] = [
     evaluate(e) {
       if (isV1(e)) {
         const observe = control(e, "observe");
+        const memoryHidden = e.memory !== undefined && e.memory.persistent && !e.memory.userVisible;
         const level = clamp(
           (has(e, "observe") ? 1 : 0) +
             (supervises(e, "provenance_at_decision") ? 1 : 0) +
-            (observe?.audience === "affected_user" ? 1 : 0),
+            (observe?.audience === "affected_user" ? 1 : 0) -
+            (memoryHidden ? 1 : 0),
         );
         return {
           level,
@@ -119,6 +121,7 @@ export const RULES: Rule[] = [
             observe?.audience === "affected_user"
               ? "visible to the affected user, not only operators"
               : `observability reaches ${observe?.audience ?? "no one"}`,
+            memoryHidden && "at least one retained scope is hidden from the user",
           ]),
         };
       }
@@ -143,10 +146,12 @@ export const RULES: Rule[] = [
     id: "aux.H03",
     evaluate(e) {
       if (isV1(e)) {
+        const memoryStuck = e.memory !== undefined && e.memory.persistent && !e.memory.userEditable;
         const level = clamp(
           (has(e, "interrupt") ? 1 : 0) +
             (has(e, "override") ? 1 : 0) +
-            (supervises(e, "reversal") ? 1 : 0),
+            (supervises(e, "reversal") ? 1 : 0) -
+            (memoryStuck ? 1 : 0),
         );
         return {
           level,
@@ -155,6 +160,7 @@ export const RULES: Rule[] = [
             has(e, "interrupt") ? "a run can be interrupted mid-flight" : "no interrupt control",
             has(e, "override") ? "a decision can be overridden" : "no override control",
             supervises(e, "reversal") ? "actions are reversible" : "actions are not reversible",
+            memoryStuck && "a retained scope cannot be corrected by the user",
           ]),
         };
       }
@@ -367,6 +373,31 @@ export const RULES: Rule[] = [
         };
       }
       const scopes = e.memory.scopeCount;
+      if (isV1(e)) {
+        // v1 declares retention and visibility per scope, so it can say more
+        // than "memory exists": whether each category is bounded, and whether
+        // the user can make it go away.
+        const level = clamp(
+          (scopes >= 1 ? 1 : 0) +
+            (e.memory.everyScopeRetained ? 1 : 0) +
+            (e.memory.forgettable ? 1 : 0),
+        );
+        return {
+          level,
+          applicable: true,
+          evidence: join([
+            scopes >= 1
+              ? `memory is persistent across ${scopes} scope(s)`
+              : "memory is persistent but no scope is declared — what is kept is unstated",
+            e.memory.everyScopeRetained
+              ? "every scope names a retention period"
+              : "at least one scope is retained indefinitely, or does not say",
+            e.memory.forgettable
+              ? "the user can have it forgotten on request"
+              : "no forget mechanism — retention is a promise about the calendar, not a control",
+          ]),
+        };
+      }
       return {
         level: clamp(2 + (scopes >= 2 ? 1 : 0)),
         applicable: true,

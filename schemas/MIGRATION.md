@@ -12,6 +12,21 @@ python3 schemas/validate.py your-agent.agent-spec.yaml
 
 ---
 
+## What v1.0 requires that v0.1.0 did not
+
+`memory` is a required block. v0 carried one flat memory declaration; v1 asks
+per scope — what is kept, for how long, whether the user can see it, correct
+it, and have it forgotten.
+
+An agent that keeps nothing writes `memory: { persistent: false }`. Saying so
+is the point: silence and "none" are different claims, and only one of them is
+checkable. The shape follows
+[`memory-policy.schema.yaml`](memory-policy.schema.yaml), so nothing here is
+new vocabulary.
+
+`aux-audit` scores it. Without a memory block a spec cannot reach Contextual
+Trust, because the only heuristic backing that stage has nothing to read.
+
 ## Why v1.0 exists
 
 v0.1.0 was written as an input format for `aux-audit`, before the Agent Owner's

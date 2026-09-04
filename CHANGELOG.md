@@ -31,6 +31,19 @@ Publishing the GitHub release and tagging `v0.2` is a manual step after merge.
 - `CITATION.cff` for GitHub’s *Cite this repository* button.
 - Project-home links to [auxfirst.com](https://auxfirst.com).
 
+## aux-audit 0.3.0
+
+- **agent-spec v1 declares memory.** A required block, per scope: name, retention,
+  visibility, editability, lawful basis, plus a forget mechanism. Shape follows
+  `memory-policy.schema.yaml`, so nothing new was invented. `aux.H08` is scoreable
+  under v1 and `aux.T02` Contextual Trust is assessable again — the three memory
+  gaps in the taxonomy are reachable from a v1 spec.
+- Memory the user cannot see costs `aux.H02`; memory they cannot correct costs
+  `aux.H03`. Same split v0 made, where `user_editable` fed H03.
+- **The audit argues with the spec's claim.** `trust_stage` is compared against the
+  computed stage, never used as input. Claiming more than the evidence supports is
+  a `high` finding naming what blocks it. Claiming less is reported and nothing more.
+
 ## aux-audit 0.2.0
 
 - Scores **agent-spec v1.0**. Both formats are read, detected from the document

@@ -128,7 +128,7 @@ test("CLI: --config is honoured", () => {
 test("CLI: --version and --help exit 0", () => {
   assert.match(
     execFileSync(process.execPath, [cliPath(), "--version"], { encoding: "utf8" }),
-    /^0\.2\.0/,
+    /^0\.3\.0/,
   );
   assert.match(
     execFileSync(process.execPath, [cliPath(), "--help"], { encoding: "utf8" }),

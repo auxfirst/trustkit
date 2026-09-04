@@ -17,6 +17,10 @@ export interface MemoryEvidence {
   scopeCount: number;
   userVisible: boolean;
   userEditable: boolean;
+  /** v1 only: every scope names a retention period. v0 had one for all of them. */
+  everyScopeRetained?: boolean;
+  /** v1 only: deletion on request is a control the user holds, not a calendar. */
+  forgettable?: boolean;
 }
 
 export interface MandateEvidence {
@@ -62,6 +66,12 @@ export interface Evidence {
 
   /** True once the spec carries evidence of testing, which gates level 3. */
   evidenced: boolean;
+
+  /**
+   * The trust stage the spec claims for itself. v1 only, and the audit's job is
+   * to agree or disagree with it — not to take it as input to the score.
+   */
+  claimedStage?: string;
 }
 
 /**
@@ -137,8 +147,18 @@ export function fromV1(spec: AgentSpecV1): Evidence {
     escalationDefault: spec.escalation_default !== undefined,
     shutdownTested: spec.shutdown.tested,
     modelPinned: spec.model?.version_pinned ?? false,
-    // v1 declares no memory. Not false — absent. See trustkit#10.
-    memory: undefined,
+    memory: {
+      persistent: spec.memory.persistent,
+      scopeCount: (spec.memory.scopes ?? []).length,
+      // v1 declares visibility per scope. A memory is user-visible only if
+      // every retained category is — one hidden scope is a hidden scope.
+      userVisible: (spec.memory.scopes ?? []).every((s) => s.user_visible),
+      userEditable: (spec.memory.scopes ?? []).every((s) => s.user_editable),
+      everyScopeRetained: (spec.memory.scopes ?? []).every(
+        (s) => typeof s.retention === "string" && s.retention.length > 1,
+      ),
+      forgettable: spec.memory.forget?.available === true,
+    },
     guarantees: [],
     tools: spec.capability.can_change,
     flows: [],
@@ -148,5 +168,6 @@ export function fromV1(spec: AgentSpecV1): Evidence {
     // A tested shutdown and a pinned model are v1's evidence of exercise, in
     // the way transcripts are v0's.
     evidenced: spec.shutdown.tested === true,
+    claimedStage: spec.trust_stage,
   };
 }

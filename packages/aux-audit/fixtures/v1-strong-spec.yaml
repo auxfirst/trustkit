@@ -210,3 +210,21 @@ status: live
 # The approver sees the draft but not the payment-history evidence behind the
 # ranking. Tracked as tg.judgment.confident_nonsense risk; fix is the
 # confidence-cues pattern on the approval queue.
+memory:
+  persistent: true
+  scopes:
+    - name: invoice_history
+      purpose: Recognise repeat late payers without re-reading the ledger each run.
+      retention: P365D
+      user_visible: true
+      user_editable: true
+      lawful_basis: legitimate_interest
+    - name: contact_preferences
+      purpose: Respect a customer's stated channel and cadence.
+      retention: P90D
+      user_visible: true
+      user_editable: true
+      lawful_basis: consent
+  forget:
+    available: true
+    mechanism: Deletion request routed to the data team; purges both scopes within 30 days.

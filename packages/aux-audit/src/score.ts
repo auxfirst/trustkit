@@ -168,6 +168,16 @@ export function audit(evidence: Evidence, options: AuditOptions = {}): AuditRepo
   const highest = [...trust_stages].reverse().find((s) => s.earned);
   const trust_stage = highest ? highest.name.toLowerCase().replace(/ trust$/, "") : null;
 
+  // A spec may claim a stage. The audit's job is to agree or disagree with the
+  // claim, never to take it as input — so it is compared, not scored.
+  const claimed = evidence.claimedStage
+    ? trust_stages.find((s) => s.id === evidence.claimedStage)
+    : undefined;
+  const trust_stage_claimed = claimed
+    ? claimed.name.toLowerCase().replace(/ trust$/, "")
+    : null;
+  const earnedOrder = highest?.order ?? 0;
+
   const issues: Issue[] = [];
   const recommendations: string[] = [];
 
@@ -195,6 +205,23 @@ export function audit(evidence: Evidence, options: AuditOptions = {}): AuditRepo
     });
   }
 
+  if (claimed && claimed.order > earnedOrder) {
+    const blocker = trust_stages
+      .filter((s) => s.order <= claimed.order && !s.earned)
+      .flatMap((s) =>
+        s.assessable ? s.shortfall : [`${s.depends_on.join(", ")} (not assessable)`],
+      );
+    issues.push({
+      id: claimed.id,
+      type: "overclaimed_trust_stage",
+      severity: "high",
+      evidence:
+        `the spec claims ${claimed.id} ${claimed.name}; the evidence supports ` +
+        `${highest ? `${highest.id} ${highest.name}` : "no stage at all"}` +
+        (blocker.length > 0 ? ` — blocked by ${[...new Set(blocker)].join(", ")}` : ""),
+    });
+  }
+
   issues.sort(
     (a, b) =>
       SEVERITY_ORDER[b.severity] - SEVERITY_ORDER[a.severity] ||
@@ -206,6 +233,7 @@ export function audit(evidence: Evidence, options: AuditOptions = {}): AuditRepo
     score,
     grade: grade(score),
     trust_stage,
+    trust_stage_claimed,
     evolution_stage: null,
     evolution_stage_status: "human-assessed",
     heuristics,
@@ -215,7 +243,7 @@ export function audit(evidence: Evidence, options: AuditOptions = {}): AuditRepo
     meta: {
       tool: "aux-audit",
       spec_version: evidence.specVersion,
-      tool_version: options.toolVersion ?? "0.2.0",
+      tool_version: options.toolVersion ?? "0.3.0",
       heuristics_version: canon.heuristicsVersion,
       trust_architecture_version: canon.trustArchitectureVersion,
       taxonomy_version: canon.taxonomyVersion,

@@ -20,7 +20,7 @@ import { toMarkdown } from "./report/markdown.js";
 import { toSarif } from "./report/sarif.js";
 import { SEVERITY_ORDER, type Severity } from "./types.js";
 
-const VERSION = "0.2.0";
+const VERSION = "0.3.0";
 const FORMATS = new Set(["md", "markdown", "json", "sarif"]);
 const SEVERITIES = new Set(["low", "medium", "high", "critical"]);
 
