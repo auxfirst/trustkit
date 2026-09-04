@@ -5,13 +5,13 @@ import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { audit } from "../src/score.js";
-import { loadSpec } from "../src/spec.js";
+import { loadEvidence } from "../src/spec.js";
 import { toJson } from "../src/report/json.js";
 import { toMarkdown } from "../src/report/markdown.js";
 import { toSarif } from "../src/report/sarif.js";
 import { cliPath, fixture } from "./helpers.js";
 
-const weak = () => audit(loadSpec(fixture("weak-spec.yaml")));
+const weak = () => audit(loadEvidence(fixture("weak-spec.yaml")));
 
 test("json output round-trips and keeps the v0.1 contract fields", () => {
   const report = weak();
@@ -128,7 +128,7 @@ test("CLI: --config is honoured", () => {
 test("CLI: --version and --help exit 0", () => {
   assert.match(
     execFileSync(process.execPath, [cliPath(), "--version"], { encoding: "utf8" }),
-    /^0\.1\.0/,
+    /^0\.2\.0/,
   );
   assert.match(
     execFileSync(process.execPath, [cliPath(), "--help"], { encoding: "utf8" }),
@@ -137,23 +137,32 @@ test("CLI: --version and --help exit 0", () => {
 });
 
 
-test("CLI: a v1 spec exits 2 with a version message, not field errors", () => {
-  const dir = mkdtempSync(join(tmpdir(), "aux-audit-v1-"));
-  const specPath = join(dir, "v1.yaml");
-  writeFileSync(
-    specPath,
-    "spec_version: '1.0'\nid: collections\nname: Collections Agent\nmandate: []\n",
+test("CLI: a v1 spec is scored, and the report says which format it was", () => {
+  const out = execFileSync(
+    process.execPath,
+    [cliPath(), "run", fixture("v1-strong-spec.yaml"), "--format", "json"],
+    { encoding: "utf8" },
   );
+  const report = JSON.parse(out);
+  assert.equal(report.meta.spec_version, "v1.0");
+  assert.ok(report.score > 0);
+  assert.equal(report.spec.name, "Accounts Receivable Follow-Up");
+});
+
+test("CLI: an invalid v1 spec reports v1 fields, never v0 ones", () => {
+  const dir = mkdtempSync(join(tmpdir(), "aux-audit-v1-"));
+  const specPath = join(dir, "broken.yaml");
+  writeFileSync(specPath, "spec_version: '1.0'\nid: x\nname: X\nmandate: []\n");
   try {
     execFileSync(process.execPath, [cliPath(), "run", specPath], { stdio: "pipe" });
     assert.fail("expected a non-zero exit");
   } catch (error) {
-    const err = error as { status: number; stderr: Buffer; stdout: Buffer };
+    const err = error as { status: number; stderr: Buffer };
     assert.equal(err.status, 2);
     const stderr = err.stderr.toString();
-    assert.match(stderr, /agent-spec v1\.0 document/);
-    assert.match(stderr, /MIGRATION\.md/);
+    assert.match(stderr, /`shutdown` is required/);
+    // v0's vocabulary must never surface for a v1 document.
     assert.doesNotMatch(stderr, /`autonomy` is required/);
-    assert.doesNotMatch(stderr, /Score/);
+    assert.doesNotMatch(stderr, /`surface` is required/);
   }
 });

@@ -1,5 +1,7 @@
 export { audit, shouldFail, type AuditOptions } from "./score.js";
-export { loadSpec, validateSpec, SpecError } from "./spec.js";
+export { loadSpec, loadEvidence, evidenceFrom, validateSpec, SpecError } from "./spec.js";
+export { validateV1, type AgentSpecV1 } from "./spec-v1.js";
+export { fromV0, fromV1, type Evidence } from "./evidence.js";
 export { loadConfig, type AuditConfig } from "./config.js";
 export { loadCanon, gapsForHeuristic, heuristicsForStage } from "./canon.js";
 export { RULES } from "./rules.js";

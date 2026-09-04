@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
-import { loadSpec, validateSpec, SpecError, SpecVersionError } from "../src/spec.js";
+import { loadSpec, loadEvidence, evidenceFrom, validateSpec, SpecError } from "../src/spec.js";
 import { fixture, repoSchema } from "./helpers.js";
 
 test("loads a well-formed spec", () => {
@@ -105,34 +105,75 @@ test("ISO-8601 durations are validated", () => {
 });
 
 
-test("a v1 document is named as a version mismatch, not a pile of field errors", () => {
+test("a v1 document is detected and scored, not rejected", () => {
   const v1 = {
     spec_version: "1.0",
     id: "collections-agent",
     name: "Collections Agent",
-    mandate: [{ action: "send reminder", authority: "human_approval", enforced_by: "queue" }],
+    purpose: "Chase overdue invoices before they age past 90 days.",
+    owners: {
+      business: { name: "A. Novak", role: "Head of Credit" },
+      technical: { name: "B. Reyes", role: "Staff Engineer" },
+    },
+    trigger: { kind: "schedule" },
+    systems: { data_sources: ["ledger"], connected: [{ name: "erp", auth: "service_account" }] },
+    capability: { can_read: ["invoices"], can_change: ["invoice_note"] },
+    mandate: [
+      { action: "invoice_note", authority: "autonomous", enforced_by: "scoped API token" },
+    ],
+    human_control: {
+      observe: { available: true },
+      interrupt: { available: true },
+      approve: { available: false },
+      override: { available: true },
+      disable: { available: true },
+    },
+    exceptions: [{ condition: "records_conflict", response: "ask_human" }],
+    shutdown: { procedure: "Revoke the service account and drain the queue.", tested: true },
   };
+  const evidence = evidenceFrom(v1);
+  assert.equal(evidence.specVersion, "v1.0");
+  assert.equal(evidence.name, "Collections Agent");
+  assert.equal(evidence.mandate?.length, 1);
+  assert.equal(evidence.mandate?.[0]?.enforcementIsMechanism, true);
+  // v1 declares no memory, and the absence must not read as "no memory".
+  assert.equal(evidence.memory, undefined);
+});
+
+test("a v1 document that breaks the schema reports the real field", () => {
   assert.throws(
-    () => validateSpec(v1),
+    () => evidenceFrom({ spec_version: "1.0", mandate: [] }),
     (error: unknown) => {
-      assert.ok(error instanceof SpecVersionError, "should be a version error");
-      assert.match(error.message, /agent-spec v1\.0 document/);
-      assert.match(error.message, /MIGRATION\.md/);
-      // The old behaviour demanded the very field v1 removes on purpose.
-      assert.doesNotMatch(error.message, /`autonomy` is required/);
-      assert.doesNotMatch(error.message, /is not valid/);
+      assert.ok(error instanceof SpecError);
+      const joined = error.problems.join("\n");
+      assert.match(joined, /`shutdown` is required/);
+      assert.match(joined, /`mandate` must NOT have fewer than 1 items/);
       return true;
     },
   );
 });
 
-test("either v1 marker alone is enough to detect it", () => {
-  for (const marker of [{ mandate: [] }, { spec_version: "1.0" }]) {
-    assert.throws(() => validateSpec({ name: "x", ...marker }), SpecVersionError);
-  }
+test("v1 rejects the autonomy label the canon forbids", () => {
+  assert.throws(
+    () =>
+      evidenceFrom({
+        spec_version: "1.0",
+        mandate: [{ action: "send", authority: "semi_autonomous", enforced_by: "queue" }],
+      }),
+    (error: unknown) => {
+      assert.ok(error instanceof SpecError);
+      assert.match(
+        error.problems.join("\n"),
+        /`mandate\.0\.authority` must be one of: autonomous, human_approval, human_only, prohibited/,
+      );
+      return true;
+    },
+  );
 });
 
-test("a v0 spec is still graded, not mistaken for v1", () => {
-  const spec = loadSpec(fixture("strong-spec.yaml"));
-  assert.equal(spec.name, "Support Copilot v2");
+test("a v0 spec still loads as v0", () => {
+  const evidence = loadEvidence(fixture("strong-spec.yaml"));
+  assert.equal(evidence.specVersion, "v0.1.0");
+  assert.equal(evidence.name, "Support Copilot v2");
+  assert.equal(evidence.memory?.persistent, true);
 });

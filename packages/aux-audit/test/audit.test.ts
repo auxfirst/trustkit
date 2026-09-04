@@ -1,13 +1,14 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { audit, shouldFail } from "../src/score.js";
-import { loadSpec } from "../src/spec.js";
+import { loadSpec, loadEvidence, evidenceFrom } from "../src/spec.js";
+import { fromV0 } from "../src/evidence.js";
 import { loadCanon, heuristicsForStage } from "../src/canon.js";
 import { RULES } from "../src/rules.js";
 import { fixture } from "./helpers.js";
 
-const strong = () => audit(loadSpec(fixture("strong-spec.yaml")));
-const weak = () => audit(loadSpec(fixture("weak-spec.yaml")));
+const strong = () => audit(loadEvidence(fixture("strong-spec.yaml")));
+const weak = () => audit(loadEvidence(fixture("weak-spec.yaml")));
 
 test("every rule maps to a heuristic in the canonical schema", () => {
   const canon = loadCanon();
@@ -48,13 +49,13 @@ test("aux.H09 is not applicable to a single-agent spec but is to a crew", () => 
   const single = strong().heuristics.find((h) => h.id === "aux.H09")!;
   assert.equal(single.applicable, false);
 
-  const crew = audit(loadSpec(fixture("multi-agent-spec.yaml")));
+  const crew = audit(loadEvidence(fixture("multi-agent-spec.yaml")));
   const multi = crew.heuristics.find((h) => h.id === "aux.H09")!;
   assert.equal(multi.applicable, true, "agent.delegate should trigger H09");
 });
 
 test("non-applicable heuristics never produce issues", () => {
-  for (const report of [strong(), weak(), audit(loadSpec(fixture("multi-agent-spec.yaml")))]) {
+  for (const report of [strong(), weak(), audit(loadEvidence(fixture("multi-agent-spec.yaml")))]) {
     const skipped = report.heuristics.filter((h) => !h.applicable).map((h) => h.id);
     for (const id of skipped) {
       assert.ok(!report.issues.some((issue) => issue.id === id), `${id} should not be reported`);
@@ -96,8 +97,7 @@ test("every issue carries evidence a reader can argue with", () => {
 });
 
 test("config can ignore a heuristic and override a severity", () => {
-  const spec = loadSpec(fixture("weak-spec.yaml"));
-  const report = audit(spec, {
+  const report = audit(loadEvidence(fixture("weak-spec.yaml")), {
     ignore: ["aux.H04"],
     severityOverrides: { "aux.H01": "low" },
   });
@@ -117,8 +117,8 @@ test("shouldFail respects the threshold", () => {
 
 test("the report is deterministic for the same spec", () => {
   const now = new Date("2026-01-01T00:00:00.000Z");
-  const spec = loadSpec(fixture("strong-spec.yaml"));
-  assert.deepEqual(audit(spec, { now }), audit(spec, { now }));
+  const ev = loadEvidence(fixture("strong-spec.yaml"));
+  assert.deepEqual(audit(ev, { now }), audit(ev, { now }));
 });
 
 test("evolution_stage is permanently out of scope, not pending", () => {
@@ -131,9 +131,14 @@ test("evolution_stage is permanently out of scope, not pending", () => {
 });
 
 test("level 3 requires evidence — a spec with no transcripts is capped at present", () => {
-  const spec = loadSpec(fixture("strong-spec.yaml"));
-  const withEvidence = audit(spec);
-  const withoutEvidence = audit({ ...spec, evaluation: { golden_transcripts: [], failure_transcripts: [] } });
+  const ev = loadEvidence(fixture("strong-spec.yaml"));
+  const withEvidence = audit(ev);
+  const withoutEvidence = audit({
+    ...ev,
+    goldenTranscripts: false,
+    failureTranscripts: false,
+    evidenced: false,
+  });
 
   assert.ok(withEvidence.heuristics.some((h) => h.applicable && h.level === 3));
   assert.ok(
@@ -149,7 +154,7 @@ test("level 3 requires evidence — a spec with no transcripts is capped at pres
 
 test("the cap cannot be dodged by declaring more prose", () => {
   const spec = loadSpec(fixture("weak-spec.yaml"));
-  const wordy = audit({
+  const wordy = audit(fromV0({
     ...spec,
     guarantees: [
       "will always ask before acting",
@@ -161,7 +166,85 @@ test("the cap cannot be dodged by declaring more prose", () => {
       "responses are deterministic and pinned to a model version",
     ],
     flows: ["./flows/onboarding.md", "./flows/handoff.md"],
-  });
+  }));
   assert.ok(wordy.heuristics.every((h) => !h.applicable || h.level <= 2));
   assert.ok(wordy.score <= 67, `prose alone should not reach robust, got ${wordy.score}`);
+});
+
+// --- agent-spec v1 ------------------------------------------------------
+
+const v1strong = () => audit(loadEvidence(fixture("v1-strong-spec.yaml")));
+const v1weak = () => audit(loadEvidence(fixture("v1-weak-spec.yaml")));
+
+test("v1: the report records which spec format produced the score", () => {
+  assert.equal(v1strong().meta.spec_version, "v1.0");
+  assert.equal(strong().meta.spec_version, "v0.1.0");
+});
+
+test("v1: a mandate with enforcement outscores one without", () => {
+  assert.ok(v1strong().score > v1weak().score);
+});
+
+test("v1: capability the mandate does not govern is reported as the attack surface", () => {
+  const h05 = v1weak().heuristics.find((h) => h.id === "aux.H05")!;
+  assert.match(h05.evidence, /capabilities the credentials grant but no mandate governs/);
+  assert.match(h05.evidence, /delete_email/);
+  assert.ok(h05.level < 2, "ungoverned write capability must not score as present");
+});
+
+test("v1: a prompt is not an enforcing mechanism", () => {
+  const spec = {
+    spec_version: "1.0",
+    id: "prompt-enforcement-probe",
+    name: "Prompt Enforcement Probe",
+    purpose: "Exercise the rule that an enforcing mechanism is not a prompt.",
+    owners: { business: { name: "A", role: "r" }, technical: { name: "B", role: "r" } },
+    trigger: { kind: "event" },
+    systems: { data_sources: ["s"], connected: [{ name: "n", auth: "service_account" }] },
+    capability: { can_read: [], can_change: ["refund"] },
+    mandate: [{ action: "refund", authority: "human_approval", enforced_by: "the system prompt" }],
+    human_control: {
+      observe: { available: true },
+      interrupt: { available: true },
+      approve: { available: true },
+      override: { available: true },
+      disable: { available: true },
+    },
+    exceptions: [{ condition: "other", response: "stop" }],
+    shutdown: { procedure: "Disable the integration.", tested: true },
+  };
+  const report = audit(evidenceFrom(spec));
+  const h05 = report.heuristics.find((h) => h.id === "aux.H05")!;
+  assert.match(h05.evidence, /enforced by something that is not a mechanism/);
+  assert.match(h05.evidence, /the system prompt/);
+});
+
+test("v1: aux.H08 is not scoreable, and says why rather than scoring zero", () => {
+  const h08 = v1strong().heuristics.find((h) => h.id === "aux.H08")!;
+  assert.equal(h08.applicable, false);
+  assert.match(h08.evidence, /no memory field/);
+  assert.ok(!v1strong().issues.some((i) => i.id === "aux.H08"), "must not be reported as a failing");
+});
+
+test("a stage with no scoreable evidence is never reported as earned", () => {
+  // The bug this guards: aux.H08 is the only heuristic backing aux.T02. Under
+  // v1 it cannot be scored, and an empty shortfall was reading as "earned" —
+  // a claim dressed as a finding.
+  const contextual = v1strong().trust_stages.find((s) => s.id === "aux.T02")!;
+  assert.equal(contextual.assessable, false);
+  assert.equal(contextual.earned, false);
+  assert.ok(!v1strong().issues.some((i) => i.id === "aux.T02"), "not the product's failure to fix");
+});
+
+test("an unassessable stage stops the ladder, as a broken one would", () => {
+  const stages = v1strong().trust_stages;
+  assert.equal(stages.find((s) => s.id === "aux.T01")!.earned, true);
+  for (const id of ["aux.T02", "aux.T03", "aux.T04"]) {
+    assert.equal(stages.find((s) => s.id === id)!.earned, false, `${id} must not be earned`);
+  }
+  assert.equal(v1strong().trust_stage, "functional");
+});
+
+test("v0 stages stay assessable — the change is version-specific", () => {
+  assert.ok(strong().trust_stages.every((s) => s.assessable));
 });

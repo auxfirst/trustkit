@@ -13,14 +13,14 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { audit, shouldFail } from "./score.js";
-import { loadSpec, SpecError, SpecVersionError } from "./spec.js";
+import { loadEvidence, SpecError } from "./spec.js";
 import { loadConfig } from "./config.js";
 import { toJson } from "./report/json.js";
 import { toMarkdown } from "./report/markdown.js";
 import { toSarif } from "./report/sarif.js";
 import { SEVERITY_ORDER, type Severity } from "./types.js";
 
-const VERSION = "0.1.0";
+const VERSION = "0.2.0";
 const FORMATS = new Set(["md", "markdown", "json", "sarif"]);
 const SEVERITIES = new Set(["low", "medium", "high", "critical"]);
 
@@ -36,6 +36,11 @@ OPTIONS
   --summary <path>    additionally write the Markdown scorecard here
                       (use with --format sarif to get a PR comment body)
   --fail-on <sev>     exit 1 on findings at or above: low | medium | high | critical
+
+VERSIONS
+  Both agent-spec formats are read, detected from the document rather than the
+  filename. v1.0 scores per-action authority and its enforcing mechanisms; v0.1.0
+  scores the older single autonomy label. Scores are not comparable across them.
   -h, --help          show this help
   -v, --version       print the version
 
@@ -165,14 +170,14 @@ function main(argv: string[]): number {
 
   let report;
   try {
-    const spec = loadSpec(args.spec);
-    report = audit(spec, {
+    const evidence = loadEvidence(args.spec);
+    report = audit(evidence, {
       ignore: config.ignore,
       severityOverrides: config.severity_overrides,
       toolVersion: VERSION,
     });
   } catch (error) {
-    if (error instanceof SpecVersionError || error instanceof SpecError) {
+    if (error instanceof SpecError) {
       process.stderr.write(`aux-audit: ${error.message}\n`);
       return 2;
     }

@@ -41,7 +41,9 @@ In CI, as a GitHub Action — SARIF into the Security tab, a scorecard on the PR
     fail-on: high
 ```
 
-It grades the **spec**, not the running product: it can prove a mechanism was never declared, never that a declared one works. A spec with no evaluation transcripts is capped at *present* on every heuristic, so the score cannot be gamed with better prose. See **[packages/aux-audit](packages/aux-audit/)**.
+It grades the **spec**, not the running product: it can prove a mechanism was never declared, never that a declared one works. A spec with no evidence of testing is capped at *present* on every heuristic, so the score cannot be gamed with better prose.
+
+Under agent-spec v1 it computes the gap between what an agent's credentials permit and what its mandate governs — the attack surface — and treats a row enforced by "the system prompt" as unenforced. See **[packages/aux-audit](packages/aux-audit/)**.
 
 ## Start here
 
@@ -80,7 +82,7 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │   ├── aux-evolution-curve.yaml   ← the 4 capability stages (teardowns only)
 │   ├── trust-contract.yaml        ← example Trust Contract
 │   ├── agent-spec.schema.yaml     ← v1.0, real JSON Schema — per-action mandate
-│   ├── agent-spec.v0.yaml         ← v0.1.0, frozen; what aux-audit 0.1.x reads
+│   ├── agent-spec.v0.yaml         ← v0.1.0, frozen; still scored, not comparable
 │   ├── MIGRATION.md               ← v0 → v1, and why
 │   ├── migrate-v0-to-v1.py        ← converter; leaves TODOs rather than guessing
 │   ├── brain-spec.schema.yaml     ← Agency Brain input format (JSON Schema)
