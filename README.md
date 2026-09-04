@@ -79,7 +79,7 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │   ├── trust-gap-taxonomy.yaml    ← named failure modes
 │   ├── aux-evolution-curve.yaml   ← the 4 capability stages (teardowns only)
 │   ├── trust-contract.yaml        ← example Trust Contract
-│   ├── agent-spec.schema.yaml     ← audit input format
+│   ├── agent-spec.schema.yaml     ← audit input format (v0.1.0, superseded — #10)
 │   ├── brain-spec.schema.yaml     ← Agency Brain input format (JSON Schema)
 │   └── memory-policy.schema.yaml  ← memory governance format
 │
