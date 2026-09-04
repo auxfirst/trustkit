@@ -22,6 +22,8 @@ const FILES = [
   "trust-architecture.yaml",
   "trust-gap-taxonomy.yaml",
   "agent-spec.schema.yaml",
+  // What the CLI actually validates against, until v0.2 reads v1.
+  "agent-spec.v0.yaml",
   // The schemas are MIT and say so next to themselves, in the tarball too.
   "LICENSE",
 ];

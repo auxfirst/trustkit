@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
-import { loadSpec, validateSpec, SpecError } from "../src/spec.js";
+import { loadSpec, validateSpec, SpecError, SpecVersionError } from "../src/spec.js";
 import { fixture, repoSchema } from "./helpers.js";
 
 test("loads a well-formed spec", () => {
@@ -44,8 +44,8 @@ test("rejects a non-mapping document", () => {
   assert.throws(() => validateSpec("just a string"), SpecError);
 });
 
-test("accepts the example embedded in agent-spec.schema.yaml", () => {
-  const schema = parse(readFileSync(repoSchema("agent-spec.schema.yaml"), "utf8")) as Record<
+test("accepts the example embedded in agent-spec.v0.yaml", () => {
+  const schema = parse(readFileSync(repoSchema("agent-spec.v0.yaml"), "utf8")) as Record<
     string,
     unknown
   >;
@@ -56,7 +56,7 @@ test("accepts the example embedded in agent-spec.schema.yaml", () => {
 });
 
 test("enum values are read from the schema, not hardcoded", () => {
-  const schema = parse(readFileSync(repoSchema("agent-spec.schema.yaml"), "utf8")) as Record<
+  const schema = parse(readFileSync(repoSchema("agent-spec.v0.yaml"), "utf8")) as Record<
     string,
     unknown
   >;
@@ -102,4 +102,37 @@ test("ISO-8601 durations are validated", () => {
   for (const bad of ["90 days", "P", "", "1D", "PT"]) {
     assert.throws(() => validateSpec(withRetention(bad)), SpecError, `${bad} should fail`);
   }
+});
+
+
+test("a v1 document is named as a version mismatch, not a pile of field errors", () => {
+  const v1 = {
+    spec_version: "1.0",
+    id: "collections-agent",
+    name: "Collections Agent",
+    mandate: [{ action: "send reminder", authority: "human_approval", enforced_by: "queue" }],
+  };
+  assert.throws(
+    () => validateSpec(v1),
+    (error: unknown) => {
+      assert.ok(error instanceof SpecVersionError, "should be a version error");
+      assert.match(error.message, /agent-spec v1\.0 document/);
+      assert.match(error.message, /MIGRATION\.md/);
+      // The old behaviour demanded the very field v1 removes on purpose.
+      assert.doesNotMatch(error.message, /`autonomy` is required/);
+      assert.doesNotMatch(error.message, /is not valid/);
+      return true;
+    },
+  );
+});
+
+test("either v1 marker alone is enough to detect it", () => {
+  for (const marker of [{ mandate: [] }, { spec_version: "1.0" }]) {
+    assert.throws(() => validateSpec({ name: "x", ...marker }), SpecVersionError);
+  }
+});
+
+test("a v0 spec is still graded, not mistaken for v1", () => {
+  const spec = loadSpec(fixture("strong-spec.yaml"));
+  assert.equal(spec.name, "Support Copilot v2");
 });

@@ -33,6 +33,12 @@ Publishing the GitHub release and tagging `v0.2` is a manual step after merge.
 
 ### Notes
 
+- `agent-spec.schema.yaml` is now v1.0: real JSON Schema draft 2020-12, with a
+  per-action `mandate` requiring `enforced_by`. The previous format is frozen as
+  `agent-spec.v0.yaml` and is what `aux-audit` 0.1.x still reads; handed a v1
+  document, the CLI reports a version mismatch instead of missing fields
+  ([#10](https://github.com/auxfirst/trustkit/issues/10)).
+
 - `evolution_stage` is reported as `human-assessed` and is always `null` in
   `aux-audit`. The capability axis is defined in
   `schemas/aux-evolution-curve.yaml` (E01 Reactive → E04 Personally

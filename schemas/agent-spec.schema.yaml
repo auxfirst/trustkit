@@ -1,104 +1,345 @@
-# Agent Spec — input format for `aux-audit`
-# Version: 0.1.0  ·  SUPERSEDED, see trustkit#10
+# Agent Spec — input format for an Agent Owner's Manual
+# Version: 1.0.0
 # License: MIT (see schemas/LICENSE)
-# A minimal, opinionated description of an agentic product.
-# Fields marked "required" will cause the audit to refuse to run if missing.
 #
-# ---------------------------------------------------------------------------
-# Two known defects. Both are real; both are tracked in trustkit#10.
+# Real JSON Schema, draft 2020-12. Validates one agent: who owns it, what it is
+# authorized to do, what it can technically do, and how a human stops it.
 #
-# 1. This file is NOT JSON Schema. It uses the reserved `$schema` key as a
-#    container for a bespoke notation ({ type: string, required: true }). Any
-#    JSON Schema tool will read it wrong. Do not point a validator at it.
+# The gap between `capability` and `mandate` is the attack surface. Both are
+# required, so the gap is computable rather than assumed.
 #
-# 2. It contradicts the canon it belongs to. `autonomy` below requires one
-#    label for the whole agent, while trust-architecture.yaml states that
-#    "autonomy is not a slider you push to the right — it is a spectrum you
-#    choose per action". `guarantees` is free text, i.e. a promise, while
-#    enforcement.rule states that "enforcement lives in a mechanism, not in a
-#    prompt" and this format has no field for the mechanism.
-#
-# This file predates that doctrine. The replacement assigns authority action
-# by action, each row requiring an `enforced_by` mechanism. Until it lands,
-# aux-audit reads this format, and a score from it inherits the limitation:
-# it grades a declared posture, not an enforced boundary.
-# ---------------------------------------------------------------------------
+# NOTE: `aux-audit` 0.1.x does not score this format yet — it reads
+# agent-spec.v0.yaml and will tell you so if handed a v1 document. v1 scoring
+# lands in aux-audit 0.2.0. See schemas/MIGRATION.md and trustkit#10.
 
-version: "0.1.0"
+$schema: https://json-schema.org/draft/2020-12/schema
+$id: https://auxfirst.com/schemas/agent-spec.schema.yaml
+title: Agent Spec
+description: >-
+  A production AI agent's operating specification. Fifteen fields minimum,
+  derived from the Agent Owner's Manual.
+type: object
+additionalProperties: false
 
-$schema:
-  name: { type: string, required: true }
-  version: { type: string, required: true }
+required:
+  - spec_version
+  - id
+  - name
+  - purpose
+  - owners
+  - trigger
+  - systems
+  - capability
+  - mandate
+  - human_control
+  - exceptions
+  - shutdown
+
+properties:
+
+  spec_version:
+    type: string
+    const: "1.0"
+
+  id:
+    type: string
+    pattern: "^[a-z0-9][a-z0-9-]{1,62}[a-z0-9]$"
+    description: Stable slug. Never reused after retirement.
+
+  name:
+    type: string
+    description: Field 01 — the name humans use for this agent.
+
+  version:
+    type: string
+    description: >-
+      The agent's own release version. Distinct from spec_version, which
+      versions this document format. Carried over from the v0.1.0 format.
 
   surface:
-    type: enum
-    values: ["chat", "inline", "ambient", "async", "multi-surface"]
-    required: true
+    type: string
+    enum: [chat, inline, ambient, async, multi-surface]
+    description: >-
+      Where the agent meets its users. Carried over from the v0.1.0 format;
+      it changes which patterns from trust-contract.yaml apply.
 
-  autonomy:
-    # SUPERSEDED (trustkit#10): a per-agent label is the abstraction the AUX
-    # canon tells readers to avoid. The replacement is a per-action mandate
-    # with an enforcing mechanism on every non-autonomous row.
-    type: enum
-    values: ["human-in-the-loop", "human-on-the-loop", "autonomous"]
-    required: true
-    description: >
-      in-the-loop: every step confirmed.
-      on-the-loop: batched review, observable.
-      autonomous: acts without supervision.
+  purpose:
+    type: string
+    minLength: 20
+    description: >-
+      Field 02 — why this agent exists, in business terms. If it cannot be
+      stated without naming the technology, it is not a purpose.
 
-  memory:
-    required: true
-    fields:
-      persistent: { type: boolean, required: true }
-      scopes: { type: list, required: true, item: string }
-      retention: { type: ISO-8601-duration, required: true }
-      user_visible: { type: boolean, required: true }
-      user_editable: { type: boolean, required: true }
+  owners:
+    type: object
+    description: >-
+      Fields 03 and 04. Two owners, not one. Business owner is a named person
+      in the function the agent serves; technical owner can change how it works.
+      An agent with only a technical owner is orphaned the day the project
+      closes.
+    additionalProperties: false
+    required: [business, technical]
+    properties:
+      business:
+        $ref: "#/$defs/person"
+      technical:
+        $ref: "#/$defs/person"
 
-  tools:
-    type: list
-    item: string
-    description: "tool/function names available to the agent"
+  trigger:
+    type: object
+    description: Field 05 — what starts a run.
+    additionalProperties: false
+    required: [kind]
+    properties:
+      kind:
+        type: string
+        enum: [schedule, event, user_invocation, escalation, continuous]
+      detail:
+        type: string
 
-  flows:
-    type: list
-    item: path
-    description: "paths to markdown flow descriptions; used for heuristic scoring"
+  users:
+    type: array
+    description: Field 06 — who interacts with it, and in what role.
+    items:
+      type: object
+      additionalProperties: false
+      required: [role]
+      properties:
+        role: { type: string }
+        can_invoke: { type: boolean, default: true }
+        can_approve: { type: boolean, default: false }
 
-  guarantees:
-    # SUPERSEDED (trustkit#10): a guarantee here is a sentence, and the canon
-    # is explicit that "a recommendation is not a control". The replacement
-    # pairs each action with the mechanism that enforces it.
-    type: list
-    item: string
-    description: >
-      explicit contracts the agent makes with the user
-      (e.g. 'will always ask before sending external email').
-      NOTE: this is a stated promise, not a verified mechanism. aux-audit can
-      confirm the sentence exists; it cannot confirm anything enforces it.
+  systems:
+    type: object
+    description: Fields 07 and 08 — data sources and connected systems.
+    additionalProperties: false
+    required: [data_sources, connected]
+    properties:
+      data_sources:
+        type: array
+        items: { type: string }
+      connected:
+        type: array
+        items:
+          type: object
+          additionalProperties: false
+          required: [name, auth]
+          properties:
+            name: { type: string }
+            auth:
+              type: string
+              enum: [service_account, delegated_identity, own_identity, oauth_user]
+              description: >-
+                own_identity or delegated_identity is required for
+                attribution. service_account makes every downstream log wrong
+                about who acted.
+            scopes:
+              type: array
+              items: { type: string }
 
-  evaluation:
-    fields:
-      golden_transcripts: { type: list, item: path }
-      failure_transcripts: { type: list, item: path }
+  capability:
+    type: object
+    description: >-
+      Fields 09 and 10 — what the agent CAN technically do, granted by its
+      credentials. Distinct from mandate on purpose.
+    additionalProperties: false
+    required: [can_read, can_change]
+    properties:
+      can_read:
+        type: array
+        items: { type: string }
+      can_change:
+        type: array
+        items: { type: string }
 
-example: |
-  name: "Support Copilot v2"
-  version: "2.3.1"
-  surface: chat
-  autonomy: human-on-the-loop
-  memory:
-    persistent: true
-    scopes: [preferences, conversation_history, escalation_notes]
-    retention: P90D
-    user_visible: true
-    user_editable: true
-  tools: [crm.lookup, email.send, ticket.create]
-  flows: [./flows/handoff.md, ./flows/refund.md]
-  guarantees:
-    - "will always ask before sending external email"
-    - "will always hand off to a human after two failed resolutions"
-  evaluation:
-    golden_transcripts: [./transcripts/golden/*.jsonl]
-    failure_transcripts: [./transcripts/failures/*.jsonl]
+  mandate:
+    type: array
+    description: >-
+      Fields 11, 12 and 13 — assigned authority, action by action. Never an
+      autonomy score. Every non-autonomous row needs an enforcing mechanism,
+      or the row is decoration.
+    minItems: 1
+    items:
+      type: object
+      additionalProperties: false
+      required: [action, authority, enforced_by]
+      properties:
+        action:
+          type: string
+          description: One verb the agent can reach.
+        authority:
+          type: string
+          enum: [autonomous, human_approval, human_only, prohibited]
+          description: >-
+            Four values, no fifth. Ambiguity in this field is where trust
+            collapses.
+        enforced_by:
+          type: string
+          minLength: 3
+          description: >-
+            The mechanism, not the intention. "System prompt" is not a valid
+            answer for human_only or prohibited.
+        approver:
+          type: string
+          description: Required when authority is human_approval.
+        heat:
+          type: object
+          additionalProperties: false
+          properties:
+            reversibility: { $ref: "#/$defs/dial" }
+            blast_radius:  { $ref: "#/$defs/dial" }
+            exposure:      { $ref: "#/$defs/dial" }
+            commitment:    { $ref: "#/$defs/dial" }
+            authority:     { $ref: "#/$defs/dial" }
+            band:
+              type: string
+              enum: [LOW, LOW_MEDIUM, MEDIUM, HIGH, CRITICAL]
+              description: >-
+                Set by the single highest dial, never the average. An action is
+                as hot as its hottest dimension.
+        autonomy_level:
+          type: string
+          enum: [L1, L2, L3, L4, L5]
+
+  human_control:
+    type: object
+    description: >-
+      Five forms of control. A kill switch alone is not oversight — meaningful
+      control starts at observe.
+    additionalProperties: false
+    required: [observe, interrupt, approve, override, disable]
+    properties:
+      observe:   { $ref: "#/$defs/control" }
+      interrupt: { $ref: "#/$defs/control" }
+      approve:   { $ref: "#/$defs/control" }
+      override:  { $ref: "#/$defs/control" }
+      disable:   { $ref: "#/$defs/control" }
+
+  exceptions:
+    type: array
+    description: >-
+      Field 14 and the failure design. The happy path is not enough.
+    minItems: 1
+    items:
+      type: object
+      additionalProperties: false
+      required: [condition, response]
+      properties:
+        condition:
+          type: string
+          enum:
+            - identifier_missing
+            - records_conflict
+            - tool_unavailable
+            - permissions_insufficient
+            - confidence_low
+            - result_disputed
+            - policy_conflict
+            - fraud_suspected
+            - sensitive_data_present
+            - other
+        detail: { type: string }
+        response:
+          type: string
+          enum: [retry, stop, ask_human, route, fallback, log, refuse]
+        escalation:
+          $ref: "#/$defs/escalation"
+
+  escalation_default:
+    $ref: "#/$defs/escalation"
+
+  supervision:
+    type: object
+    description: The six supervision primitives, as implemented.
+    additionalProperties: false
+    properties:
+      agent_identity_disclosed:   { type: boolean }
+      action_receipt:             { type: boolean }
+      reversal:                   { type: boolean }
+      consequence_scaled_approval: { type: boolean }
+      escalation_handoff:         { type: boolean }
+      provenance_at_decision:     { type: boolean }
+
+  shutdown:
+    type: object
+    description: >-
+      Field 15. No shutdown procedure, no deployment.
+    additionalProperties: false
+    required: [procedure, tested]
+    properties:
+      procedure: { type: string, minLength: 10 }
+      tested:
+        type: boolean
+        description: An untested kill switch is a claim, not a control.
+      last_tested: { type: string, format: date }
+      revokes_access: { type: boolean }
+
+  model:
+    type: object
+    additionalProperties: false
+    properties:
+      provider: { type: string }
+      name: { type: string }
+      version_pinned:
+        type: boolean
+        description: An unpinned model version means behavior changes without a release.
+
+  trust_stage:
+    type: string
+    enum: [aux.T01, aux.T02, aux.T03, aux.T04]
+    description: >-
+      The stage demonstrably earned, not the stage aspired to. Ids are
+      namespaced to match trust-architecture.yaml; the site displays them
+      unprefixed as T01-T04.
+
+  status:
+    type: string
+    enum: [design, shadow, draft, narrow_live, live, retired]
+
+$defs:
+  person:
+    type: object
+    additionalProperties: false
+    required: [name]
+    properties:
+      name:
+        type: string
+        description: A person, not a team. "Platform Team" is not an owner.
+      role: { type: string }
+      contact: { type: string }
+
+  dial:
+    type: integer
+    minimum: 0
+    maximum: 4
+
+  control:
+    type: object
+    additionalProperties: false
+    required: [available]
+    properties:
+      available: { type: boolean }
+      mechanism: { type: string }
+      audience:
+        type: string
+        enum: [affected_user, operator, admin_only, none]
+
+  escalation:
+    type: object
+    additionalProperties: false
+    required: [recipient, deadline_minutes, on_timeout]
+    properties:
+      recipient:
+        type: string
+        description: A named human. "The team" is a queue, not a recipient.
+      deadline_minutes:
+        type: integer
+        minimum: 1
+      on_timeout:
+        type: string
+        enum: [stop, fallback, refuse, page_secondary]
+        description: >-
+          What happens when nobody answers. Without this, "ask a human" is a
+          queue that fills up.
+      context_preserved:
+        type: boolean

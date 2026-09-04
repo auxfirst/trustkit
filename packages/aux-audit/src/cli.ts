@@ -13,7 +13,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, relative, resolve } from "node:path";
 import { audit, shouldFail } from "./score.js";
-import { loadSpec, SpecError } from "./spec.js";
+import { loadSpec, SpecError, SpecVersionError } from "./spec.js";
 import { loadConfig } from "./config.js";
 import { toJson } from "./report/json.js";
 import { toMarkdown } from "./report/markdown.js";
@@ -172,7 +172,7 @@ function main(argv: string[]): number {
       toolVersion: VERSION,
     });
   } catch (error) {
-    if (error instanceof SpecError) {
+    if (error instanceof SpecVersionError || error instanceof SpecError) {
       process.stderr.write(`aux-audit: ${error.message}\n`);
       return 2;
     }
