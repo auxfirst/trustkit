@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { mkdtempSync, readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { audit } from "../src/score.js";
@@ -134,4 +134,26 @@ test("CLI: --version and --help exit 0", () => {
     execFileSync(process.execPath, [cliPath(), "--help"], { encoding: "utf8" }),
     /USAGE/,
   );
+});
+
+
+test("CLI: a v1 spec exits 2 with a version message, not field errors", () => {
+  const dir = mkdtempSync(join(tmpdir(), "aux-audit-v1-"));
+  const specPath = join(dir, "v1.yaml");
+  writeFileSync(
+    specPath,
+    "spec_version: '1.0'\nid: collections\nname: Collections Agent\nmandate: []\n",
+  );
+  try {
+    execFileSync(process.execPath, [cliPath(), "run", specPath], { stdio: "pipe" });
+    assert.fail("expected a non-zero exit");
+  } catch (error) {
+    const err = error as { status: number; stderr: Buffer; stdout: Buffer };
+    assert.equal(err.status, 2);
+    const stderr = err.stderr.toString();
+    assert.match(stderr, /agent-spec v1\.0 document/);
+    assert.match(stderr, /MIGRATION\.md/);
+    assert.doesNotMatch(stderr, /`autonomy` is required/);
+    assert.doesNotMatch(stderr, /Score/);
+  }
 });

@@ -10,7 +10,7 @@
 #     two schemas disagreeing on the same enum
 #
 # Local repro:
-#   yamllint schemas/ .github/
+#   yamllint schemas/ .github/    (colons disabled: agent-spec v1 aligns $ref columns)
 #   lychee --offline --no-progress --include-fragments=full --include-mail=false '**/*.md'
 #   npm --prefix packages/aux-audit ci && npm --prefix packages/aux-audit test
 
@@ -48,11 +48,11 @@ jobs:
 
       - name: Lint schemas
         run: |
-          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" schemas/
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}, colons: disable}}" schemas/
 
       - name: Lint workflows + Issue templates
         run: |
-          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" .github/
+          yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}, colons: disable}}" .github/
 
       - name: Install jsonschema
         run: pip install --quiet jsonschema

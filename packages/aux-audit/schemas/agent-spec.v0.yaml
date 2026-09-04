@@ -1,0 +1,101 @@
+# Agent Spec v0.1.0 — DEPRECATED, superseded by agent-spec.schema.yaml (v1.0)
+# License: MIT (see schemas/LICENSE)
+#
+# Frozen. Kept so existing pipelines keep running: no new fields, bug fixes
+# only. `aux-audit` 0.1.x reads THIS file, not v1 — see schemas/MIGRATION.md.
+#
+# Superseded for two doctrinal reasons, not cosmetic ones:
+#
+#   1. `autonomy` is one enum for the whole agent. trust-architecture.yaml
+#      states that "autonomy is not a slider you push to the right — it is a
+#      spectrum you choose per action". v1 replaces the label with a per-action
+#      mandate, every non-autonomous row requiring an enforcing mechanism.
+#
+#   2. `guarantees` are free-text promises. The canon's rule is that
+#      "enforcement lives in a mechanism, not in a prompt", and this format has
+#      no field for the mechanism at all.
+#
+# A third, technical: this file is NOT JSON Schema. It uses the reserved
+# `$schema` key as a container for a bespoke notation. Do not point a JSON
+# Schema validator at it. v1 is real draft 2020-12.
+#
+# Migrating: python3 schemas/migrate-v0-to-v1.py your-spec.yaml
+# Tracked in: https://github.com/auxfirst/trustkit/issues/10
+version: "0.1.0"
+
+$schema:
+  name: { type: string, required: true }
+  version: { type: string, required: true }
+
+  surface:
+    type: enum
+    values: ["chat", "inline", "ambient", "async", "multi-surface"]
+    required: true
+
+  autonomy:
+    # SUPERSEDED (trustkit#10): a per-agent label is the abstraction the AUX
+    # canon tells readers to avoid. The replacement is a per-action mandate
+    # with an enforcing mechanism on every non-autonomous row.
+    type: enum
+    values: ["human-in-the-loop", "human-on-the-loop", "autonomous"]
+    required: true
+    description: >
+      in-the-loop: every step confirmed.
+      on-the-loop: batched review, observable.
+      autonomous: acts without supervision.
+
+  memory:
+    required: true
+    fields:
+      persistent: { type: boolean, required: true }
+      scopes: { type: list, required: true, item: string }
+      retention: { type: ISO-8601-duration, required: true }
+      user_visible: { type: boolean, required: true }
+      user_editable: { type: boolean, required: true }
+
+  tools:
+    type: list
+    item: string
+    description: "tool/function names available to the agent"
+
+  flows:
+    type: list
+    item: path
+    description: "paths to markdown flow descriptions; used for heuristic scoring"
+
+  guarantees:
+    # SUPERSEDED (trustkit#10): a guarantee here is a sentence, and the canon
+    # is explicit that "a recommendation is not a control". The replacement
+    # pairs each action with the mechanism that enforces it.
+    type: list
+    item: string
+    description: >
+      explicit contracts the agent makes with the user
+      (e.g. 'will always ask before sending external email').
+      NOTE: this is a stated promise, not a verified mechanism. aux-audit can
+      confirm the sentence exists; it cannot confirm anything enforces it.
+
+  evaluation:
+    fields:
+      golden_transcripts: { type: list, item: path }
+      failure_transcripts: { type: list, item: path }
+
+example: |
+  name: "Support Copilot v2"
+  version: "2.3.1"
+  surface: chat
+  autonomy: human-on-the-loop
+  memory:
+    persistent: true
+    scopes: [preferences, conversation_history, escalation_notes]
+    retention: P90D
+    user_visible: true
+    user_editable: true
+  tools: [crm.lookup, email.send, ticket.create]
+  flows: [./flows/handoff.md, ./flows/refund.md]
+  guarantees:
+    - "will always ask before sending external email"
+    - "will always hand off to a human after two failed resolutions"
+  evaluation:
+    golden_transcripts: [./transcripts/golden/*.jsonl]
+    failure_transcripts: [./transcripts/failures/*.jsonl]

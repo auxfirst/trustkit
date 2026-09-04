@@ -1,5 +1,5 @@
 /**
- * Loads and validates an agent spec against schemas/agent-spec.schema.yaml.
+ * Loads and validates an agent spec against schemas/agent-spec.v0.yaml.
  *
  * Per the schema header: "Fields marked required will cause the audit to refuse
  * to run if missing." A spec that fails validation is an error, not a low score
@@ -11,7 +11,35 @@ import { parse } from "yaml";
 import { schemaDir } from "./canon.js";
 import type { AgentSpec, Autonomy, MemorySpec, Surface } from "./types.js";
 
-const schemaPath = (): string => join(schemaDir(), "agent-spec.schema.yaml");
+/**
+ * v0.1.0, deliberately. agent-spec.schema.yaml is v1.0 and this release does
+ * not score it — see the version shim below and schemas/MIGRATION.md.
+ */
+const schemaPath = (): string => join(schemaDir(), "agent-spec.v0.yaml");
+
+/**
+ * Handed a v1 document, aux-audit 0.1.x used to reject it with four field
+ * errors — including "`autonomy` is required", demanding the very field v1
+ * removes on purpose. That reads as a broken tool rather than a version
+ * mismatch, so it is detected before validation and reported as itself.
+ */
+export class SpecVersionError extends Error {
+  readonly detected = "v1.0";
+  constructor() {
+    super(
+      "this is an agent-spec v1.0 document; aux-audit 0.1.x reads v0.1.0.\n" +
+        "  Nothing was graded. v1 scoring lands in aux-audit 0.2.0.\n" +
+        "  Migrating a v0 spec:  python3 schemas/migrate-v0-to-v1.py your-spec.yaml\n" +
+        "  Background:           schemas/MIGRATION.md, trustkit#10",
+    );
+    this.name = "SpecVersionError";
+  }
+}
+
+/** v1 declares a per-action mandate and a spec_version; v0 declares neither. */
+function looksLikeV1(raw: Record<string, unknown>): boolean {
+  return "mandate" in raw || "spec_version" in raw;
+}
 
 export class SpecError extends Error {
   readonly problems: string[];
@@ -100,6 +128,8 @@ export function validateSpec(input: unknown): AgentSpec {
     throw new SpecError(["the spec must be a YAML or JSON mapping"]);
   }
   const raw = input as Record<string, unknown>;
+  if (looksLikeV1(raw)) throw new SpecVersionError();
+
   const { surface, autonomy } = schemaEnums();
 
   for (const key of ["name", "version"] as const) {

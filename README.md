@@ -79,7 +79,10 @@ Or read **[onboarding/README.md](onboarding/README.md)** — the router with all
 │   ├── trust-gap-taxonomy.yaml    ← named failure modes
 │   ├── aux-evolution-curve.yaml   ← the 4 capability stages (teardowns only)
 │   ├── trust-contract.yaml        ← example Trust Contract
-│   ├── agent-spec.schema.yaml     ← audit input format (v0.1.0, superseded — #10)
+│   ├── agent-spec.schema.yaml     ← v1.0, real JSON Schema — per-action mandate
+│   ├── agent-spec.v0.yaml         ← v0.1.0, frozen; what aux-audit 0.1.x reads
+│   ├── MIGRATION.md               ← v0 → v1, and why
+│   ├── migrate-v0-to-v1.py        ← converter; leaves TODOs rather than guessing
 │   ├── brain-spec.schema.yaml     ← Agency Brain input format (JSON Schema)
 │   └── memory-policy.schema.yaml  ← memory governance format
 │

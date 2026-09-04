@@ -32,7 +32,9 @@ Change the YAML in `schemas/`, and the audit changes with it. No heuristic text,
 
 **aux-audit grades the spec, not the running product.** It can prove a mechanism was never declared. It cannot prove a declared one works.
 
-There is a sharper limit in the current input format, tracked in [trustkit#10](https://github.com/auxfirst/trustkit/issues/10): `agent-spec.schema.yaml` v0.1.0 carries a single per-agent `autonomy` label and free-text `guarantees`, so a score reflects a **declared posture**, not an enforced boundary. The replacement assigns authority action by action and requires a mechanism on every non-autonomous row.
+There is a sharper limit in the format this version reads, tracked in [trustkit#10](https://github.com/auxfirst/trustkit/issues/10): `agent-spec.v0.yaml` carries a single per-agent `autonomy` label and free-text `guarantees`, so a score reflects a **declared posture**, not an enforced boundary.
+
+The replacement, `agent-spec.schema.yaml` v1.0, is published and assigns authority action by action with a required `enforced_by` on every non-autonomous row. **aux-audit 0.1.x does not score it.** Hand it a v1 document and it says so in one line and exits 2, rather than reporting the fields v1 removed on purpose as missing. v1 scoring lands in 0.2.0.
 
 Two consequences, both deliberate:
 
