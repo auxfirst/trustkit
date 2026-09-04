@@ -142,7 +142,7 @@ properties:
     properties:
       stage:
         type: string
-        enum: [T01, T02, T03, T04]
+        enum: [aux.T01, aux.T02, aux.T03, aux.T04]
         description: Trust stage per trust-architecture.yaml. Earned, not aspired to.
       autonomy_level:
         type: string
