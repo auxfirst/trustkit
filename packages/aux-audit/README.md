@@ -32,6 +32,8 @@ Change the YAML in `schemas/`, and the audit changes with it. No heuristic text,
 
 **aux-audit grades the spec, not the running product.** It can prove a mechanism was never declared. It cannot prove a declared one works.
 
+There is a sharper limit in the current input format, tracked in [trustkit#10](https://github.com/auxfirst/trustkit/issues/10): `agent-spec.schema.yaml` v0.1.0 carries a single per-agent `autonomy` label and free-text `guarantees`, so a score reflects a **declared posture**, not an enforced boundary. The replacement assigns authority action by action and requires a mechanism on every non-autonomous row.
+
 Two consequences, both deliberate:
 
 - **Level 3 requires evidence.** "Robust" means *works under novel, adversarial, or edge cases* — prose cannot demonstrate that. A spec with no `evaluation.golden_transcripts` or `evaluation.failure_transcripts` is capped at level 2 on every heuristic, however well written. This is what stops the score from being gamed by rewriting guarantees.
