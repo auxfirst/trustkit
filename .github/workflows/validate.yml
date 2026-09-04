@@ -6,6 +6,8 @@
 #   - broken internal links across onboarding/forwardables/repos
 #   - aux-audit failing its own test suite, or drifting from the canonical schemas
 #   - a taxonomy gap with no pattern, or a pattern missing one of its four files
+#   - cross-schema drift: a gap pointing at a heuristic that does not exist, or
+#     two schemas disagreeing on the same enum
 #
 # Local repro:
 #   yamllint schemas/ .github/
@@ -51,6 +53,17 @@ jobs:
       - name: Lint workflows + Issue templates
         run: |
           yamllint -d "{extends: relaxed, rules: {line-length: {max: 200}}}" .github/
+
+      - name: Install jsonschema
+        run: pip install --quiet jsonschema
+
+      # yamllint proves each file is well-formed. This proves they agree with
+      # each other: every gap resolves to a real heuristic and trust stage,
+      # every heat band to an autonomy level, and enums duplicated across
+      # schemas stay in step. Checks whose source key is absent report `skip`,
+      # never `ok`.
+      - name: Cross-schema references
+        run: python schemas/validate.py
 
   links:
     name: Markdown links
