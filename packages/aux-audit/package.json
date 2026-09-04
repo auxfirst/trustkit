@@ -1,6 +1,6 @@
 {
   "name": "aux-audit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Score an agent product against the 10 AUX Heuristics and the Trust Architecture. Reproducible, CI-friendly, SARIF-capable.",
   "keywords": [
     "aux",
@@ -49,6 +49,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "ajv": "^8.20.0",
     "yaml": "^2.9.0"
   },
   "devDependencies": {

@@ -13,6 +13,7 @@ import {
   type Canon,
 } from "./canon.js";
 import { RULES } from "./rules.js";
+import type { Evidence } from "./evidence.js";
 import type {
   AgentSpec,
   AuditReport,
@@ -45,11 +46,8 @@ const EARNED_AT = 2;
  */
 const ROBUST_CAP = 2;
 
-function hasEvidence(spec: AgentSpec): boolean {
-  return (
-    (spec.evaluation?.golden_transcripts ?? []).length > 0 ||
-    (spec.evaluation?.failure_transcripts ?? []).length > 0
-  );
+function hasEvidence(e: Evidence): boolean {
+  return e.evidenced;
 }
 
 function grade(score: number): Grade {
@@ -89,12 +87,12 @@ function recommend(heuristicName: string, fixPattern: string): string {
   return `${heuristicName}: adopt the \`${fixPattern}\` pattern.`;
 }
 
-export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport {
+export function audit(evidence: Evidence, options: AuditOptions = {}): AuditReport {
   const canon = loadCanon();
   const ignore = new Set(options.ignore ?? []);
   const overrides = options.severityOverrides ?? {};
 
-  const evidenced = hasEvidence(spec);
+  const evidenced = hasEvidence(evidence);
   const byId = new Map(canon.heuristics.map((h) => [h.id, h]));
   const heuristics: HeuristicResult[] = [];
 
@@ -116,7 +114,7 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
       });
       continue;
     }
-    const outcome = rule.evaluate(spec);
+    const outcome = rule.evaluate(evidence);
     const capped = outcome.applicable && !evidenced && outcome.level > ROBUST_CAP;
     heuristics.push({
       id: rule.id,
@@ -143,11 +141,17 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
   let ladderIntact = true;
   for (const stage of canon.stages) {
     const depends_on = heuristicsForStage(canon, stage.id);
-    const shortfall = depends_on.filter((id) => {
-      const result = levelOf.get(id);
-      return result !== undefined && result.applicable && result.level < EARNED_AT;
-    });
-    const earnedHere = shortfall.length === 0;
+    const backing = depends_on
+      .map((id) => levelOf.get(id))
+      .filter((result): result is HeuristicResult => result !== undefined);
+    // Nothing measured means nothing earned. Reporting a stage as earned
+    // because its only evidence could not be scored is the failure this whole
+    // taxonomy exists to name.
+    const assessable = backing.some((result) => result.applicable);
+    const shortfall = backing
+      .filter((result) => result.applicable && result.level < EARNED_AT)
+      .map((result) => result.id);
+    const earnedHere = assessable && shortfall.length === 0;
     const earned = ladderIntact && earnedHere;
     if (!earned) ladderIntact = false;
     trust_stages.push({
@@ -155,6 +159,7 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
       name: stage.name,
       order: stage.order,
       earned,
+      assessable,
       depends_on,
       shortfall,
     });
@@ -181,7 +186,7 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
   }
 
   for (const stage of trust_stages) {
-    if (stage.earned || stage.shortfall.length === 0) continue;
+    if (stage.earned || !stage.assessable || stage.shortfall.length === 0) continue;
     issues.push({
       id: stage.id,
       type: `${stage.name.toLowerCase().replace(/ trust$/, "").replace(/\s+/g, "_")}_trust_gap`,
@@ -197,7 +202,7 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
   );
 
   return {
-    spec: { name: spec.name, version: spec.version },
+    spec: { name: evidence.name, version: evidence.agentVersion },
     score,
     grade: grade(score),
     trust_stage,
@@ -209,7 +214,8 @@ export function audit(spec: AgentSpec, options: AuditOptions = {}): AuditReport 
     recommendations: [...new Set(recommendations)],
     meta: {
       tool: "aux-audit",
-      tool_version: options.toolVersion ?? "0.1.0",
+      spec_version: evidence.specVersion,
+      tool_version: options.toolVersion ?? "0.2.0",
       heuristics_version: canon.heuristicsVersion,
       trust_architecture_version: canon.trustArchitectureVersion,
       taxonomy_version: canon.taxonomyVersion,

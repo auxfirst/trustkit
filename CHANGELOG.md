@@ -31,6 +31,21 @@ Publishing the GitHub release and tagging `v0.2` is a manual step after merge.
 - `CITATION.cff` for GitHub’s *Cite this repository* button.
 - Project-home links to [auxfirst.com](https://auxfirst.com).
 
+## aux-audit 0.2.0
+
+- Scores **agent-spec v1.0**. Both formats are read, detected from the document
+  rather than the filename, and `meta.spec_version` records which produced a
+  score — they are not comparable.
+- Under v1 the rules ask a better question. `aux.H01` and `aux.H03` read
+  per-action authority and the five human controls instead of one label;
+  `aux.H05` computes the gap between what the credentials permit and what the
+  mandate governs; a row enforced by "the system prompt" counts as unenforced.
+- `aux.H08` reports *not scoreable* under v1, which has no memory field, rather
+  than scoring zero. A trust stage whose entire backing is unscoreable is now
+  reported **not assessable** and is never counted as earned — previously an
+  empty shortfall read as success on zero evidence.
+- v0.1.0 scoring is unchanged.
+
 ### Notes
 
 - `agent-spec.schema.yaml` is now v1.0: real JSON Schema draft 2020-12, with a

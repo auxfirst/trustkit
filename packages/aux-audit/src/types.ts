@@ -57,6 +57,12 @@ export interface TrustStageResult {
   name: string;
   order: number;
   earned: boolean;
+  /**
+   * False when every heuristic backing this stage is inapplicable, so nothing
+   * was measured. A stage that cannot be assessed is never reported as earned:
+   * that would be a claim dressed as a finding.
+   */
+  assessable: boolean;
   /** Heuristic ids that must score >= 2 for this stage, per the gap taxonomy. */
   depends_on: string[];
   shortfall: string[];
@@ -87,6 +93,8 @@ export interface AuditReport {
   recommendations: string[];
   meta: {
     tool: string;
+    /** Which agent-spec format was scored. Scores are not comparable across it. */
+    spec_version: "v0.1.0" | "v1.0";
     tool_version: string;
     heuristics_version: string;
     trust_architecture_version: string;

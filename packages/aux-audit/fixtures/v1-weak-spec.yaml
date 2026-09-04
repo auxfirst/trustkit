@@ -1,0 +1,36 @@
+# A v1 spec that satisfies the schema and still fails the doctrine: everything
+# autonomous, enforcement by prompt, no supervision primitives, untested kill
+# switch. v1 makes these visible where v0 could not express them at all.
+spec_version: "1.0"
+id: inbox-autopilot
+name: Inbox Autopilot
+purpose: Clear the shared inbox without human involvement.
+owners:
+  business: { name: "Unassigned", role: "TBD" }
+  technical: { name: "Platform Team", role: "Engineering" }
+trigger:
+  kind: continuous
+systems:
+  data_sources: ["mailbox"]
+  connected:
+    - name: gmail
+      auth: own_identity
+capability:
+  can_read: ["mailbox", "contacts", "calendar"]
+  can_change: ["send_email", "delete_email", "calendar_event"]
+mandate:
+  - action: send_email
+    authority: autonomous
+    enforced_by: "the system prompt tells it to be careful"
+human_control:
+  observe: { available: false }
+  interrupt: { available: false }
+  approve: { available: false }
+  override: { available: false }
+  disable: { available: true, mechanism: "revoke the OAuth token", audience: admin_only }
+exceptions:
+  - condition: tool_unavailable
+    response: retry
+shutdown:
+  procedure: "Revoke the OAuth token in the admin console."
+  tested: false

@@ -1,0 +1,212 @@
+# Example agent spec — validates against agent-spec.schema.yaml
+#
+# A realistic, deliberately unglamorous agent: chasing overdue invoices.
+# Note what the spec forces into the open — the send action is HIGH band on
+# exposure and commitment alone, so it cannot be autonomous no matter how
+# reliable the agent has proved to be on the read actions.
+#
+# Validate with:  python3 schemas/validate.py schemas/example-agent-spec.yaml
+#
+# CC BY 4.0 · auxfirst agency 2026
+
+spec_version: "1.0"
+id: ar-followup
+name: Accounts Receivable Follow-Up
+purpose: >-
+  Chase overdue invoices on a schedule so finance staff spend their time only
+  on disputed and exceptional cases.
+
+owners:
+  business:
+    name: Anna Nowak
+    role: Head of Finance Operations
+    contact: anna.nowak@example.com
+  technical:
+    name: Piotr Lis
+    role: Platform Engineer
+    contact: piotr.lis@example.com
+
+trigger:
+  kind: schedule
+  detail: Weekdays 07:00 Europe/Warsaw
+
+users:
+  - role: Accounts receivable clerk
+    can_invoke: true
+    can_approve: true
+  - role: Account executive
+    can_invoke: false
+    can_approve: true
+
+systems:
+  data_sources:
+    - Billing database (invoices, payment status)
+    - CRM (contact of record, account owner)
+  connected:
+    - name: Billing service
+      auth: own_identity
+      scopes: [invoice:read, invoice:note:write]
+    - name: Mail gateway
+      auth: own_identity
+      scopes: [draft:write]     # send scope deliberately withheld
+    - name: CRM
+      auth: delegated_identity
+      scopes: [contact:read]
+
+# What the credentials permit. Compare against mandate below —
+# the difference is the attack surface.
+capability:
+  can_read:
+    - invoices
+    - payment status
+    - contacts of record
+  can_change:
+    - invoice internal note
+    - email drafts
+
+mandate:
+  - action: Read invoice and payment status
+    authority: autonomous
+    enforced_by: Scoped read token, invoice:read only
+    heat: { reversibility: 0, blast_radius: 0, exposure: 0, commitment: 0, authority: 0, band: LOW }
+    autonomy_level: L1
+
+  - action: Identify overdue invoices and rank by age
+    authority: autonomous
+    enforced_by: Read-only query path, no write scope
+    heat: { reversibility: 0, blast_radius: 0, exposure: 0, commitment: 0, authority: 0, band: LOW }
+    autonomy_level: L1
+
+  - action: Write an internal note on the invoice
+    authority: autonomous
+    enforced_by: Field-scoped write API, note field only
+    heat: { reversibility: 0, blast_radius: 0, exposure: 0, commitment: 0, authority: 1, band: LOW }
+    autonomy_level: L4
+
+  - action: Draft a reminder email
+    authority: autonomous
+    enforced_by: Mail gateway draft scope; send scope not granted
+    heat: { reversibility: 0, blast_radius: 0, exposure: 0, commitment: 0, authority: 1, band: LOW }
+    autonomy_level: L3
+
+  # The hinge. Three dials are cool and the action is still HIGH,
+  # because it leaves the building and asks for money.
+  - action: Send a reminder email to the customer
+    authority: human_approval
+    enforced_by: Send scope withheld until an approval token is issued
+    approver: Account executive on the account
+    heat: { reversibility: 1, blast_radius: 0, exposure: 3, commitment: 3, authority: 1, band: HIGH }
+    autonomy_level: L3
+
+  - action: Apply a late-payment fee
+    authority: human_only
+    enforced_by: Agent has no write path to the fee service
+    approver: Head of Finance Operations
+    heat: { reversibility: 2, blast_radius: 0, exposure: 3, commitment: 4, authority: 2, band: CRITICAL }
+    autonomy_level: L2
+
+  - action: Escalate to a collections agency
+    authority: prohibited
+    enforced_by: Integration not provisioned for this agent identity
+    heat: { reversibility: 4, blast_radius: 1, exposure: 4, commitment: 4, authority: 3, band: CRITICAL }
+
+human_control:
+  observe:
+    available: true
+    mechanism: Per-run log with the invoices touched and drafts produced
+    audience: affected_user
+  interrupt:
+    available: true
+    mechanism: Pause the approval queue; in-flight drafts are held
+    audience: operator
+  approve:
+    available: true
+    mechanism: Approval queue, one entry per outbound email
+    audience: operator
+  override:
+    available: true
+    mechanism: Edit the draft before approving, or reject with a reason
+    audience: operator
+  disable:
+    available: true
+    mechanism: Feature flag plus token revocation
+    audience: admin_only
+
+exceptions:
+  - condition: identifier_missing
+    detail: No contact of record on the account
+    response: route
+    escalation:
+      recipient: Anna Nowak
+      deadline_minutes: 480
+      on_timeout: stop
+      context_preserved: true
+
+  - condition: records_conflict
+    detail: Billing and CRM disagree on payment status
+    response: ask_human
+    escalation:
+      recipient: Anna Nowak
+      deadline_minutes: 240
+      on_timeout: stop
+      context_preserved: true
+
+  - condition: result_disputed
+    detail: Customer replies contesting the invoice
+    response: route
+    escalation:
+      recipient: Account executive on the account
+      deadline_minutes: 120
+      on_timeout: page_secondary
+      context_preserved: true
+
+  - condition: tool_unavailable
+    detail: Billing service unreachable
+    response: stop
+
+  - condition: confidence_low
+    response: ask_human
+    escalation:
+      recipient: Anna Nowak
+      deadline_minutes: 480
+      on_timeout: stop
+      context_preserved: true
+
+  - condition: sensitive_data_present
+    detail: Bank details appear in a customer reply
+    response: refuse
+
+escalation_default:
+  recipient: Anna Nowak
+  deadline_minutes: 480
+  on_timeout: stop
+  context_preserved: true
+
+supervision:
+  agent_identity_disclosed: true
+  action_receipt: true
+  reversal: true
+  consequence_scaled_approval: true
+  escalation_handoff: true
+  provenance_at_decision: false      # known gap — see note below
+
+shutdown:
+  procedure: >-
+    Disable the feature flag, revoke the billing and mail gateway tokens, drain
+    the approval queue, and notify the two owners.
+  tested: true
+  last_tested: "2026-08-20"
+  revokes_access: true
+
+model:
+  provider: anthropic
+  name: claude-sonnet-5
+  version_pinned: true
+
+trust_stage: aux.T02
+status: live
+
+# Known gap, recorded rather than hidden: provenance_at_decision is false.
+# The approver sees the draft but not the payment-history evidence behind the
+# ranking. Tracked as tg.judgment.confident_nonsense risk; fix is the
+# confidence-cues pattern on the approval queue.

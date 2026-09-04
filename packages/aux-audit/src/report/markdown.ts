@@ -30,7 +30,8 @@ export function toMarkdown(report: AuditReport): string {
   const lines: string[] = [];
   const applicable = report.heuristics.filter((h) => h.applicable);
 
-  lines.push(`## aux-audit — ${report.spec.name} \`${report.spec.version}\``);
+  const version = report.spec.version === "unversioned" ? "" : ` \`${report.spec.version}\``;
+  lines.push(`## aux-audit — ${report.spec.name}${version}`);
   lines.push("");
   lines.push(
     `**Score ${report.score}/100 · Grade ${report.grade} · Trust stage: ${report.trust_stage ?? "none earned"}**`,
@@ -42,13 +43,32 @@ export function toMarkdown(report: AuditReport): string {
   lines.push("| Stage | Earned | Blocked by |");
   lines.push("|---|---|---|");
   for (const stage of report.trust_stages) {
-    const blockers = stage.shortfall.length > 0 ? stage.shortfall.map((s) => `\`${s}\``).join(", ") : "—";
+    if (!stage.assessable) {
+      lines.push(
+        `| ${stage.order}. ${stage.name} | — | not assessable: ${stage.depends_on
+          .map((s) => `\`${s}\``)
+          .join(", ")} could not be scored |`,
+      );
+      continue;
+    }
+    const blockers =
+      stage.shortfall.length > 0
+        ? stage.shortfall.map((s) => `\`${s}\``).join(", ")
+        : stage.earned
+          ? "—"
+          : "an earlier stage — trust is sequential";
     lines.push(`| ${stage.order}. ${stage.name} | ${stage.earned ? "✅" : "❌"} | ${blockers} |`);
   }
   lines.push("");
   lines.push(
     "> Trust is sequential. A stage is earned only when every heuristic its failure modes name scores *present* or better, and only if every earlier stage is earned.",
   );
+  if (report.trust_stages.some((stage) => !stage.assessable)) {
+    lines.push("");
+    lines.push(
+      "> A stage marked *not assessable* had no scoreable evidence at all. It is not earned and not failed — nothing was measured, and reporting it either way would be a claim rather than a finding.",
+    );
+  }
   lines.push("");
 
   lines.push(`### Heuristics (${applicable.length} scored)`);

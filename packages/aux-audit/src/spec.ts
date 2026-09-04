@@ -9,6 +9,8 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { parse } from "yaml";
 import { schemaDir } from "./canon.js";
+import { fromV0, fromV1, type Evidence } from "./evidence.js";
+import { validateV1 } from "./spec-v1.js";
 import type { AgentSpec, Autonomy, MemorySpec, Surface } from "./types.js";
 
 /**
@@ -16,25 +18,6 @@ import type { AgentSpec, Autonomy, MemorySpec, Surface } from "./types.js";
  * not score it — see the version shim below and schemas/MIGRATION.md.
  */
 const schemaPath = (): string => join(schemaDir(), "agent-spec.v0.yaml");
-
-/**
- * Handed a v1 document, aux-audit 0.1.x used to reject it with four field
- * errors — including "`autonomy` is required", demanding the very field v1
- * removes on purpose. That reads as a broken tool rather than a version
- * mismatch, so it is detected before validation and reported as itself.
- */
-export class SpecVersionError extends Error {
-  readonly detected = "v1.0";
-  constructor() {
-    super(
-      "this is an agent-spec v1.0 document; aux-audit 0.1.x reads v0.1.0.\n" +
-        "  Nothing was graded. v1 scoring lands in aux-audit 0.2.0.\n" +
-        "  Migrating a v0 spec:  python3 schemas/migrate-v0-to-v1.py your-spec.yaml\n" +
-        "  Background:           schemas/MIGRATION.md, trustkit#10",
-    );
-    this.name = "SpecVersionError";
-  }
-}
 
 /** v1 declares a per-action mandate and a spec_version; v0 declares neither. */
 function looksLikeV1(raw: Record<string, unknown>): boolean {
@@ -128,8 +111,6 @@ export function validateSpec(input: unknown): AgentSpec {
     throw new SpecError(["the spec must be a YAML or JSON mapping"]);
   }
   const raw = input as Record<string, unknown>;
-  if (looksLikeV1(raw)) throw new SpecVersionError();
-
   const { surface, autonomy } = schemaEnums();
 
   for (const key of ["name", "version"] as const) {
@@ -218,4 +199,40 @@ export function loadSpec(path: string): AgentSpec {
     ]);
   }
   return validateSpec(parsed);
+}
+
+
+/**
+ * Reads either spec version and returns the normalised evidence the rules
+ * score. Version is detected from the document, never from the filename, so a
+ * spec is graded as what it is rather than as what it was called.
+ */
+export function loadEvidence(path: string): Evidence {
+  let raw: string;
+  try {
+    raw = readFileSync(path, "utf8");
+  } catch {
+    throw new SpecError([`cannot read spec file: ${path}`]);
+  }
+  let parsed: unknown;
+  try {
+    parsed = parse(raw);
+  } catch (error) {
+    throw new SpecError([
+      `spec is not valid YAML or JSON: ${(error as Error).message}`,
+    ]);
+  }
+  return evidenceFrom(parsed);
+}
+
+export function evidenceFrom(parsed: unknown): Evidence {
+  if (parsed === null || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new SpecError(["the spec must be a YAML or JSON mapping"]);
+  }
+  if (looksLikeV1(parsed as Record<string, unknown>)) {
+    const { spec, problems } = validateV1(parsed);
+    if (!spec) throw new SpecError(problems);
+    return fromV1(spec);
+  }
+  return fromV0(validateSpec(parsed));
 }

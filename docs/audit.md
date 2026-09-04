@@ -16,7 +16,7 @@ npx aux-audit run ./agent-spec.yaml
 
 ## Contract
 
-- **Input:** an agent spec matching [`schemas/agent-spec.v0.yaml`](../schemas/agent-spec.v0.yaml). The canonical [`agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml) is now v1.0; aux-audit 0.1.x does not score it yet and says so plainly rather than reporting missing fields — see [MIGRATION.md](../schemas/MIGRATION.md) and [#10](https://github.com/auxfirst/trustkit/issues/10).
+- **Input:** an agent spec in either format — [`agent-spec.schema.yaml`](../schemas/agent-spec.schema.yaml) v1.0 or [`agent-spec.v0.yaml`](../schemas/agent-spec.v0.yaml). The version is detected from the document, not the filename, and `meta.spec_version` records which one was scored. Scores are not comparable across the two; see [MIGRATION.md](../schemas/MIGRATION.md).
 - **Output:** `score`, `grade`, `trust_stage`, `issues[]`, `recommendations[]`.
 - **Formats:** Markdown (default), JSON, SARIF 2.1.0.
 - **Exit codes:** `0` clean · `1` findings at or above `--fail-on` · `2` invalid spec (nothing graded).
