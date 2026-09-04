@@ -52,6 +52,21 @@ export interface ExceptionRow {
   escalation?: Escalation;
 }
 
+export interface MemoryScope {
+  name: string;
+  purpose?: string;
+  retention: string;
+  user_visible: boolean;
+  user_editable: boolean;
+  lawful_basis?: string;
+}
+
+export interface MemorySpecV1 {
+  persistent: boolean;
+  scopes?: MemoryScope[];
+  forget?: { available: boolean; mechanism?: string };
+}
+
 export interface AgentSpecV1 {
   spec_version: string;
   id: string;
@@ -64,6 +79,7 @@ export interface AgentSpecV1 {
   users?: unknown[];
   systems: { data_sources: string[]; connected: { name: string; auth: unknown }[] };
   capability: { can_read: string[]; can_change: string[] };
+  memory: MemorySpecV1;
   mandate: MandateRow[];
   human_control: Record<"observe" | "interrupt" | "approve" | "override" | "disable", Control>;
   exceptions: ExceptionRow[];

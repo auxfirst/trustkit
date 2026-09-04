@@ -76,6 +76,11 @@ export interface AuditReport {
   grade: Grade;
   trust_stage: string | null;
   /**
+   * The stage the spec claimed, when it claimed one. Reported next to the
+   * computed stage so the two can disagree in public.
+   */
+  trust_stage_claimed: string | null;
+  /**
    * Always null, by design — not pending.
    *
    * A spec describes what a product *declares about itself*; capability is a

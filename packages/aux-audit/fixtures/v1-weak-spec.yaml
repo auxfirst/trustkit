@@ -34,3 +34,10 @@ exceptions:
 shutdown:
   procedure: "Revoke the OAuth token in the admin console."
   tested: false
+memory:
+  persistent: true
+  scopes:
+    - name: everything_seen
+      retention: P3650D
+      user_visible: false
+      user_editable: false

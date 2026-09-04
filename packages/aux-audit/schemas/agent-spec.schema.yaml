@@ -30,6 +30,7 @@ required:
   - trigger
   - systems
   - capability
+  - memory
   - mandate
   - human_control
   - exceptions
@@ -151,6 +152,64 @@ properties:
       can_change:
         type: array
         items: { type: string }
+
+  memory:
+    type: object
+    description: >-
+      What the agent retains between runs. Required: an agent with no memory
+      declares `persistent: false` rather than staying silent, because silence
+      and "none" are different claims and only one of them is checkable.
+      Shape follows memory-policy.schema.yaml.
+    additionalProperties: false
+    required:
+      - persistent
+    properties:
+      persistent:
+        type: boolean
+        description: Does anything survive the end of a run?
+      scopes:
+        type: array
+        description: >-
+          One entry per category of retained content. Required when persistent
+          is true — "we remember things" is not a memory policy.
+        items:
+          type: object
+          additionalProperties: false
+          required:
+            - name
+            - retention
+            - user_visible
+            - user_editable
+          properties:
+            name:
+              type: string
+              description: The category, e.g. preferences, conversation_history.
+            purpose:
+              type: string
+            retention:
+              type: string
+              pattern: "^P(?!$)(\\d+Y)?(\\d+M)?(\\d+W)?(\\d+D)?(T(?!$)(\\d+H)?(\\d+M)?(\\d+S)?)?$"
+              description: ISO-8601 duration. P90D, P1Y. "Indefinite" is a decision, so write it as one.
+            user_visible:
+              type: boolean
+            user_editable:
+              type: boolean
+            lawful_basis:
+              type: string
+              enum: [consent, contract, legitimate_interest, legal_obligation, not_applicable]
+      forget:
+        type: object
+        description: >-
+          Deletion on request. A retention period with no forget mechanism is a
+          promise about the calendar, not a control the user holds.
+        additionalProperties: false
+        required:
+          - available
+        properties:
+          available:
+            type: boolean
+          mechanism:
+            type: string
 
   mandate:
     type: array

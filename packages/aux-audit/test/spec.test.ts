@@ -118,6 +118,7 @@ test("a v1 document is detected and scored, not rejected", () => {
     trigger: { kind: "schedule" },
     systems: { data_sources: ["ledger"], connected: [{ name: "erp", auth: "service_account" }] },
     capability: { can_read: ["invoices"], can_change: ["invoice_note"] },
+    memory: { persistent: false },
     mandate: [
       { action: "invoice_note", authority: "autonomous", enforced_by: "scoped API token" },
     ],
@@ -136,8 +137,7 @@ test("a v1 document is detected and scored, not rejected", () => {
   assert.equal(evidence.name, "Collections Agent");
   assert.equal(evidence.mandate?.length, 1);
   assert.equal(evidence.mandate?.[0]?.enforcementIsMechanism, true);
-  // v1 declares no memory, and the absence must not read as "no memory".
-  assert.equal(evidence.memory, undefined);
+  assert.equal(evidence.memory?.persistent, false);
 });
 
 test("a v1 document that breaks the schema reports the real field", () => {

@@ -36,6 +36,13 @@ export function toMarkdown(report: AuditReport): string {
   lines.push(
     `**Score ${report.score}/100 · Grade ${report.grade} · Trust stage: ${report.trust_stage ?? "none earned"}**`,
   );
+  if (report.trust_stage_claimed && report.trust_stage_claimed !== report.trust_stage) {
+    lines.push("");
+    lines.push(
+      `> **The spec claims *${report.trust_stage_claimed}*; the evidence supports *${report.trust_stage ?? "no stage at all"}*.** ` +
+        "A stage is earned by what the spec can show, not by what it says about itself.",
+    );
+  }
   lines.push("");
 
   lines.push("### Trust Architecture");

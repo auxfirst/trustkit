@@ -38,7 +38,13 @@ Under **v1.0** the audit asks a better question. Instead of *"what did you call 
 
 Under **v0.1.0** nothing changed: the same label and the same prose guarantees produce the same scores as before. Scores are not comparable across the two, so `meta.spec_version` records which one produced them.
 
-One thing v1 cannot express: **memory**. It has no field for persistence, scoping, or retention, so `aux.H08` is reported as not scoreable rather than scored zero — and `aux.T02` Contextual Trust, whose only backing heuristic that is, comes back *not assessable* rather than earned. See [trustkit#10](https://github.com/auxfirst/trustkit/issues/10).
+**v1 declares memory**, per scope: what is kept, for how long, whether the user can see it, correct it, and have it forgotten. `aux.H08` scores whether the memory is bounded and forgettable; visibility feeds `aux.H02` and editability `aux.H03`, the same split v0 made.
+
+**The audit argues with the spec's own claim.** A v1 spec may declare a `trust_stage`. That is never an input to the score — it is compared against it, and a spec claiming more than it shows gets told so:
+
+> **The spec claims *advocacy*; the evidence supports *no stage at all*.** A stage is earned by what the spec can show, not by what it says about itself.
+
+Under-claiming is surfaced next to the computed stage and nothing more. Modesty is not a defect.
 
 Two consequences, both deliberate:
 
